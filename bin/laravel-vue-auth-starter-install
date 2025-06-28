@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Laravel Vue Auth Starter Installation Script
+ *
+ * This script is called automatically when the package is installed
+ * via Composer. It provides instructions for manual installation.
+ */
+
+echo "==========================================\n";
+echo "Laravel Vue Auth Starter Package\n";
+echo "==========================================\n\n";
+
+echo "Package installed successfully!\n\n";
+
+echo "Next steps:\n";
+echo "1. Run: php artisan laravel-vue-auth-starter:install\n";
+echo "2. Configure your .env file with database and social login settings\n";
+echo "3. Set up OAuth applications in your social provider dashboards\n";
+echo "4. Run: php artisan serve\n";
+echo "5. Visit: http://localhost:8000\n\n";
+
+echo "Documentation: https://github.com/joel-phaka/laravel-vue-auth-starter\n";
+echo "Issues: https://github.com/joel-phaka/laravel-vue-auth-starter/issues\n\n";
+
+echo "Happy coding! 🚀\n";
