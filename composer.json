@@ -1,0 +1,93 @@
+{
+    "name": "joel-phaka/laravel-vue-auth-starter",
+    "description": "A production-ready Laravel 12 + Vue 3 authentication starter kit with dual authentication (Sanctum + Passport), social login, role-based access control, and comprehensive security features.",
+    "type": "library",
+    "version": "1.0.0",
+    "license": "MIT",
+    "keywords": ["laravel", "sanctum", "passport", "socialite", "vue", "boilerplate", "authentication", "starter"],
+    "homepage": "https://github.com/joel-phaka/laravel-vue-auth-starter",
+    "support": {
+        "issues": "https://github.com/joel-phaka/laravel-vue-auth-starter/issues",
+        "source": "https://github.com/joel-phaka/laravel-vue-auth-starter"
+    },
+    "authors": [
+        {
+            "name": "Joël Phaka",
+            "email": "joel.phaka@hotmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.21",
+        "laravel/sanctum": "^4.2",
+        "laravel/passport": "^12.4",
+        "laravel/socialite": "^5.23",
+        "jenssegers/agent": "^2.6",
+        "stevebauman/location": "^7.5",
+        "peterpetrus/passport-token": "^0.1.0",
+        "laravel/tinker": "^2.10.1"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.24",
+        "laravel/pail": "^1.2.3",
+        "laravel/pint": "^1.24",
+        "laravel/sail": "^1.44",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.8",
+        "phpunit/phpunit": "^11.5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        },
+        "files": [
+            "app/Support/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": []
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi"
+        ],
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
+        ],
+        "test": [
+            "@php artisan config:clear --ansi",
+            "@php artisan test"
+        ]
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    }
+}
