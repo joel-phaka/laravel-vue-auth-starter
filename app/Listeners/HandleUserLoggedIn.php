@@ -4,12 +4,13 @@ namespace App\Listeners;
 
 use App\Events\UserLoggedIn;
 use App\Models\LoginLog;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 use Jenssegers\Agent\Agent;
 use Stevebauman\Location\Facades\Location;
 
 
-class LogUserLogin
+class HandleUserLoggedIn
 {
     /**
      * Create the event listener.
@@ -24,8 +25,13 @@ class LogUserLogin
      */
     public function handle(UserLoggedIn $event): void
     {
+        $this->logLogin($event->getUser());
+    }
+
+    private function logLogin(User $user): void
+    {
         $loginLog = new LoginLog();
-        $loginLog->user_id = $event->getUser()->getAuthIdentifier();
+        $loginLog->user_id = $user->getAuthIdentifier();
         $loginLog->ip = request()->ip();
         $loginLog->user_agent = request()->header('user-agent');
         $loginLog->date = Carbon::now();

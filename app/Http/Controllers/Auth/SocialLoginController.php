@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Enums\UserRole;
 use App\Events\UserLoggedIn;
-use App\Support\Utils;
+use App\Events\UserRegistered;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
@@ -17,7 +17,7 @@ class SocialLoginController extends Controller
 {
     public function redirectToProvider(Request $request, $provider): BaseResponse
     {
-        if (Utils::isLocalUrl(strval($request->query('return_url')))) {
+        if (is_local_url(strval($request->query('return_url')))) {
             session(['return_url' => $request->query('return_url')]);
         }
 
@@ -47,7 +47,7 @@ class SocialLoginController extends Controller
                 'last_name' => $lastName,
             ]);
 
-            $user?->sendEmailVerificationNotification();
+            event(new UserRegistered($user));
         }
 
         if (!$user) {

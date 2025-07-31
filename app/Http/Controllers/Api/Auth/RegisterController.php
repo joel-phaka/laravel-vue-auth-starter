@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Auth\RegisterRequest;
+use App\Events\UserRegistered;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -23,11 +24,11 @@ class RegisterController extends Controller
 
         if (!$user) {
             return response()
-                ->json(['message' => 'Failed to create user account.'])
+                ->json(['message' => 'User registration failed.'])
                 ->badRequest();
         }
 
-        $user->sendEmailVerificationNotification();
+        event(new UserRegistered($user));
 
         return response()->json(['success' => true]);
     }

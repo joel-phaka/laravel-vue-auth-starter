@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Support\Utils;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Pagination\Paginator;
@@ -33,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
     private function loadDynamicConfigs(): void
     {
         if (!app()->runningInConsole()) {
-            $baseUrl = Utils::baseUrl();
+            $baseUrl = base_url();
 
             config([
                 'app.url' => $baseUrl,
@@ -70,7 +69,7 @@ class AppServiceProvider extends ServiceProvider
                         'hash' => sha1($notifiable->getEmailForVerification()),
                     ]);
 
-                return Utils::signUrl($uri, 60 * 60);
+                return sign_url($uri, 60 * 60);
             });
 
             ResetPassword::createUrlUsing(function ($notifiable, $token) {

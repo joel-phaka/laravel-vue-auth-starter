@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Enums\SignedUrlState;
-use App\Support\Utils;
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
@@ -25,7 +24,7 @@ class EmailVerificationController extends Controller
         }
 
         $uri = Uri::of($request->string('url'));
-        $signedUrlState = Utils::verifySignedUrl($uri, true);
+        $signedUrlState = verify_signed_url($uri, true);
 
         if ($signedUrlState !== SignedUrlState::VALID_URL ||
             !hash_equals(strval($uri->query()->get('id')), strval(Auth::user()->getKey())) ||
