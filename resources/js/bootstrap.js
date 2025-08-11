@@ -23,7 +23,10 @@ window.axios.interceptors.request.use(config => {
     return config;
 });
 
-window.axios.interceptors.response.use(response => response, error => Promise.reject(normaliseError(error)));
+window.axios.interceptors.response.use(
+    response => response,
+    error => Promise.reject(normaliseError(error))
+);
 
 window.axios.interceptors.response.use(
     response => response,

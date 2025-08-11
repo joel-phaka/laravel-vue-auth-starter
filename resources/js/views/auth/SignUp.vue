@@ -94,8 +94,8 @@ const onSubmit = handleSubmit(async (values) => {
             </template>
         </div>
         <div>
-            <div class="mb-3">
-                <label for="firstName" class="block pb-1">First Name</label>
+            <div class="tw:mb-3">
+                <label for="firstName" class="tw:block tw:pb-1">First Name</label>
                 <InputText
                     v-model="firstName"
                     v-bind="firstNameAttrs"
@@ -103,11 +103,11 @@ const onSubmit = handleSubmit(async (values) => {
                     id="firstName"
                     name="firstName"
                     placeholder="First Name"
-                    class="block w-full"/>
-                <p v-if="!!errors.firstName" class="mt-2 text-red-500">{{errors.firstName}}</p>
+                    class="tw:block tw:w-full"/>
+                <p v-if="!!errors.firstName" class="tw:mt-2 tw:text-red-500">{{errors.firstName}}</p>
             </div>
-            <div class="mb-3">
-                <label for="lastName" class="block pb-1">Last Name</label>
+            <div class="tw:mb-3">
+                <label for="lastName" class="tw:block tw:pb-1">Last Name</label>
                 <InputText
                     v-model="lastName"
                     v-bind="lastNameAttrs"
@@ -115,8 +115,8 @@ const onSubmit = handleSubmit(async (values) => {
                     id="lastName"
                     name="lastName"
                     placeholder="Last Name"
-                    class="block w-full"/>
-                <p v-if="!!errors.lastName" class="mt-2 text-red-500">{{errors.lastName}}</p>
+                    class="tw:block tw:w-full"/>
+                <p v-if="!!errors.lastName" class="tw:mt-2 tw:text-red-500">{{errors.lastName}}</p>
             </div>
             <div class="mb-3">
                 <label for="email" class="block pb-1">Email</label>
@@ -127,11 +127,11 @@ const onSubmit = handleSubmit(async (values) => {
                     id="email"
                     name="email"
                     placeholder="Email"
-                    class="block w-full"/>
-                <p v-if="!!errors.email" class="mt-2 text-red-500">{{errors.email}}</p>
+                    class="tw:block tw:w-full"/>
+                <p v-if="!!errors.email" class="tw:mt-2 tw:text-red-500">{{errors.email}}</p>
             </div>
-            <div class="mb-3">
-                <label for="password" class="block pb-1">Password</label>
+            <div class="tw:mb-3">
+                <label for="password" class="tw:block tw:pb-1">Password</label>
                 <Password
                     v-model="password"
                     v-bind="passwordAttrs"
@@ -141,11 +141,11 @@ const onSubmit = handleSubmit(async (values) => {
                     placeholder="Password"
                     :feedback="false"
                     toggleMask
-                    class="w-full"/>
-                <p v-if="!!errors.password" class="mt-2 text-red-500">{{errors.password}}</p>
+                    class="tw:w-full"/>
+                <p v-if="!!errors.password" class="tw:mt-2 tw:text-red-500">{{errors.password}}</p>
             </div>
-            <div class="mb-5">
-                <label for="passwordConfirmation" class="block pb-1">Confirm Password</label>
+            <div class="tw:mb-5">
+                <label for="passwordConfirmation" class="tw:block tw:pb-1">Confirm Password</label>
                 <Password
                     v-model="passwordConfirmation"
                     v-bind="passwordConfirmationAttrs"
@@ -155,11 +155,11 @@ const onSubmit = handleSubmit(async (values) => {
                     placeholder="Confirm Password"
                     :feedback="false"
                     toggleMask
-                    class="w-full"/>
-                <p v-if="!!errors.passwordConfirmation" class="mt-2 text-red-500">{{errors.passwordConfirmation}}</p>
+                    class="tw:w-full"/>
+                <p v-if="!!errors.passwordConfirmation" class="tw:mt-2 tw:text-red-500">{{errors.passwordConfirmation}}</p>
             </div>
-            <div class="mb-6">
-                <div class="mb-3 flex align-items-center">
+            <div>
+                <div class="tw:mb-3 tw:flex tw:items-center">
                     <Checkbox
                         v-model="acceptTerms"
                         v-bind="acceptTermsAttrs"
@@ -168,19 +168,19 @@ const onSubmit = handleSubmit(async (values) => {
                         name="acceptTerms"/>
                     <label for="acceptTerms" class="ml-2 cursor-pointer">I accept terms and conditions</label>
                 </div>
-                <p v-if="!!errors.acceptTerms" class="mt-2 text-red-500">{{errors.acceptTerms}}</p>
+                <p v-if="!!errors.acceptTerms" class="tw:mt-2 tw:text-red-500">{{errors.acceptTerms}}</p>
             </div>
-            <div class="mb-6 flex justify-content-center">
+            <div class="tw:my-9 tw:flex tw:justify-center">
                 <div>
                     <RecaptchaCheckbox v-model="recaptchaToken" v-bind="recaptchaTokenAttrs"/>
-                    <div v-if="!!errors.recaptchaToken" class="mt-2 text-red-500">
+                    <div v-if="!!errors.recaptchaToken" class="tw:mt-2 tw:text-red-500">
                         {{ errors.recaptchaToken }}
                     </div>
                 </div>
             </div>
-            <Button type="submit" :disabled="!meta.valid" class="block w-full mt-5 text-center">Sign Up</Button>
-            <p class="text-center mt-5 mb-0">
-                Already have an account? <router-link to="/signin" class="no-underline">Sign In</router-link>
+            <Button type="submit" :disabled="!meta.valid" class="tw:block tw:w-full tw:text-center">Sign Up</Button>
+            <p class="tw:text-center tw:mt-8 tw:mb-0">
+                Already have an account? <router-link to="/signin" class="no-underline default-link">Sign In</router-link>
             </p>
         </div>
     </form>

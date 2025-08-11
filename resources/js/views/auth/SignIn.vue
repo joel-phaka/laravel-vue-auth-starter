@@ -59,11 +59,11 @@ const openExternalSignInWindow = (provider) => {
 
 <template>
     <form @submit="onSubmit" class="signin-form">
-        <div class="mb-5">
+        <div class="tw:mb-5">
             <img :src="appLogo" alt="form-app-logo" class="form-app-logo">
             <h2>Sign in to continue</h2>
             <p v-if="!meta.dirty">Enter your email and password to sign in.</p>
-            <p v-else-if="!!authErrors?.loginError" class="text-red-500">
+            <p v-else-if="!!authErrors?.loginError" class="tw:text-red-500">
                 <template v-if="authErrors?.loginError?.data?.error_code === 'auth_invalid_credentials'">
                     Incorrect email or password
                 </template>
@@ -73,8 +73,8 @@ const openExternalSignInWindow = (provider) => {
             </p>
         </div>
         <div>
-            <div class="mb-3">
-                <label for="email" class="block pb-1">Email</label>
+            <div class="tw:mb-3">
+                <label for="email" class="tw:block tw:pb-1">Email</label>
                 <InputText
                     v-model="email"
                     v-bind="emailAttrs"
@@ -82,11 +82,11 @@ const openExternalSignInWindow = (provider) => {
                     id="email"
                     name="email"
                     placeholder="Email"
-                    class="block w-full"/>
-                <p v-if="!!errors.email" class="mt-2 text-red-500">{{ errors.email }}</p>
+                    class="tw:block tw:w-full"/>
+                <p v-if="!!errors.email" class="tw:mt-2 tw:text-red-500">{{ errors.email }}</p>
             </div>
-            <div class="mb-6">
-                <label for="password" class="block pb-1">Password</label>
+            <div>
+                <label for="password" class="tw:block tw:pb-1">Password</label>
                 <Password
                     v-model="password"
                     v-bind="passwordAttrs"
@@ -96,10 +96,10 @@ const openExternalSignInWindow = (provider) => {
                     placeholder="Password"
                     :feedback="false"
                     toggleMask
-                    class="w-full"/>
-                <p v-if="!!errors.password" class="mt-2 text-red-500">{{ errors.password }}</p>
-                <div class="flex align-content-center mt-3 font-size-small">
-                    <div class="flex items-center gap-2 align-items-center">
+                    class="tw:w-full"/>
+                <p v-if="!!errors.password" class="tw:mt-2 tw:text-red-500">{{ errors.password }}</p>
+                <div class="tw:flex tw:align-content-center tw:mt-3 tw:text-sm">
+                    <div class="tw:flex tw:items-center tw:gap-2">
                         <Checkbox
                             v-model="rememberMe"
                             v-bind="rememberMeAttrs"
@@ -110,33 +110,37 @@ const openExternalSignInWindow = (provider) => {
                     </div>
                     <router-link
                         to="/password/forgot"
-                        class="no-underline ml-auto">
+                        class="no-underline tw:ml-auto default-link">
                         Forgot Password
                     </router-link>
                 </div>
             </div>
-            <div class="mb-6 flex justify-content-center">
+            <div class="tw:my-9 tw:flex tw:justify-center">
                 <div>
                     <RecaptchaCheckbox v-model="recaptcha" v-bind="recaptchaAttrs"/>
-                    <div v-if="!!errors.recaptcha" class="mt-2 text-red-500">
+                    <div v-if="!!errors.recaptcha" class="tw:mt-2 tw:text-red-500">
                         {{ errors.recaptcha }}
                     </div>
                 </div>
             </div>
-            <Button type="submit" :disabled="!meta.valid" class="block w-full mt-5 text-center">Sign In</Button>
-            <div class="flex align-items-center my-3">
-                <div class="flex-1 border-1 border-color"></div>
-                <div class="flex-grow-0 m-2 text-gray-400">OR</div>
-                <div class="flex-1 border-1 border-color"></div>
+            <Button type="submit" :disabled="!meta.valid" class="tw:block tw:w-full tw:text-center">Sign In</Button>
+            <div class="tw:flex tw:items-center tw:my-3">
+                <div class="tw:flex-1 tw:border border-color"></div>
+                <div class="tw:flex-grow-0 tw:m-2 tw:text-gray-400">OR</div>
+                <div class="tw:flex-1 tw:border border-color"></div>
             </div>
             <Button
-                label="Sign In with Google"
-                class="block w-full text-center"
-                severity="info" variant="outlined"
-                @click="() => openExternalSignInWindow('google')"/>
-            <p v-if="config.allowSignUp" class="text-center mt-5 mb-0">
+                class="tw:block tw:w-full"
+                variant="outlined"
+                @click="() => openExternalSignInWindow('google')">
+                <div class="tw:flex tw:items-center tw:justify-center">
+                    <img src="@/assets/google-logo.svg" alt="Google Logo" class="tw:w-[16px] tw:h-[16px]">
+                    <span class="tw:ml-2">Sign In with Google</span>
+                </div>
+            </Button>
+            <p v-if="config.allowSignUp" class="tw:text-center tw:mt-8 tw:mb-0">
                 Don't have an account?
-                <router-link to="/signup" class="no-underline">Sign Up</router-link>
+                <router-link to="/signup" class="no-underline default-link">Sign Up</router-link>
             </p>
         </div>
     </form>
