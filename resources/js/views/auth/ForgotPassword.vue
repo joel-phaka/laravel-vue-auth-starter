@@ -50,7 +50,7 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
     <form @submit="onSubmit" class="forgot-password-form">
-        <div class="mb-5">
+        <div class="tw:mb-8">
             <!--<img :src="siteLogo" alt="form-site-logo" class="form-site-logo">-->
             <h2>Forgot Your Password?</h2>
             <p>
@@ -62,11 +62,11 @@ const onSubmit = handleSubmit(async (values) => {
             <Message
                 v-if="forgotPasswordError?.response?.hasValidationErrors && forgotPasswordError?.response?.data?.errors?.email[0]"
                 severity="error"
-                class="mb-5">
+                class="tw:mb-8">
                 {{ forgotPasswordError?.response?.data?.errors?.email[0] }}
             </Message>
             <div>
-                <div class="mb-3">
+                <div class="tw:mb-5">
                     <InputText
                         v-model="email"
                         v-bind="emailAttrs"
@@ -74,15 +74,15 @@ const onSubmit = handleSubmit(async (values) => {
                         :disabled="isEmailSent"
                         id="email"
                         placeholder="Email"
-                        class="block w-full"/>
-                    <p v-if="!!errors.email" class="mt-2 text-red-500">{{errors.email}}</p>
+                        class="tw:block tw:w-full"/>
+                    <p v-if="!!errors.email" class="tw:mt-2 tw:text-red-500">{{errors.email}}</p>
                 </div>
             </div>
             <div v-if="!isEmailSent">
-                <div class="mb-3 flex justify-content-center">
+                <div class="tw:flex tw:justify-center">
                     <div>
                         <RecaptchaCheckbox v-model="recaptchaToken" v-bind="recaptchaTokenAttrs"/>
-                        <div v-if="!!errors.recaptchaToken" class="mt-2 text-red-500">
+                        <div v-if="!!errors.recaptchaToken" class="tw:mt-2 tw:text-red-500">
                             {{ errors.recaptchaToken }}
                         </div>
                     </div>
@@ -91,11 +91,11 @@ const onSubmit = handleSubmit(async (values) => {
                     v-if="!isEmailSent"
                     type="submit"
                     :disabled="!meta.valid"
-                    class="block w-full mt-5 text-center">
+                    class="tw:block tw:w-full tw:my-8 tw:text-center">
                     Submit
                 </Button>
-                <p class="text-center mt-5 mb-0">
-                    Do you remember your password? <router-link to="/signin" class="no-underline">Sign In</router-link>
+                <p class="tw:text-center tw:mb-0">
+                    Do you remember your password? <router-link to="/signin" class="no-underline default-link">Sign In</router-link>
                 </p>
             </div>
         </div>

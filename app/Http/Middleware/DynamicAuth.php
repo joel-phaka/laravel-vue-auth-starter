@@ -27,6 +27,12 @@ class DynamicAuth
             Auth::shouldUse('sanctum');
         }
 
+        if (!Auth::check()) {
+            return response()
+                ->json(['message' => 'Unauthorized'])
+                ->unauthorized();
+        }
+
         return $next($request);
     }
 }

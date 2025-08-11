@@ -45,17 +45,16 @@ const handleImageError = (e) => {
 		<Avatar
 			v-if="!user.profile_picture || showAvatar"
 			size="small"
-			class="absolute flex align-items-center justify-content-center text-white w-full h-full"
-			style="font-size: 14px; user-select:none; font-weight: bolder; background-color: var(--primary-color); color: var(--p-primary-contrast-color);"
+			class="tw:flex tw:items-center tw:justify-center tw:bg-primary! tw:text-white tw:w-full! tw:h-full! tw:font-bold tw:select-none"
+			style="font-size: 14px;color: white;"
 			:label="userInitials"
 			shape="circle"
 			rounded />
 		<img
 			v-if="!!user.profile_picture"
 			:src="user.profile_picture"
-			:alt="`${user.first_name} ${user.last_name}`"
-			class="absolute border-circle w-full h-full"
-			style="display: block"
+			:alt="`${user.full_name}`"
+			class="tw:block tw:absolute tw:rounded-[50%] tw:w-full tw:h-full"
 			@load="handleImageLoad"
 			@error="handleImageError"/>
 	</div>

@@ -12,16 +12,19 @@ provide('app:layout:auth:setProcessing', (v) => {
 
 <template>
     <div
-        class="main-container flex md:align-items-center md:justify-content-center relative"
+        class="main-container tw:flex tw:md:items-center tw:md:justify-center tw:relative"
         style="min-height: 100vh">
-        <div v-show="!isProcessing" class="form-container pt-5 pb-7 md:px-4 mx-3 md:my-6">
+        <div v-show="!isProcessing" class="form-container tw:pt-8 tw:pb-16 tw:md:px-6 tw:mx-6 tw:md:my-12">
             <slot class=""></slot>
         </div>
-        <div v-show="isProcessing" class="fixed center-vertical-horizontal surface-ground" style="width: max-content; border-radius: 50%">
+        <div
+            v-show="isProcessing"
+            class="tw:fixed tw:bg-surface-200 tw:dark:bg-surface-800 center-vertical-horizontal"
+            style="width: max-content; height: max-content; max-height: max-content; border-radius: 50%; aspect-ratio: 1 / 1;">
             <ProgressSpinner strokeWidth="4"/>
         </div>
         <ThemeToggleButton
-            class="fixed"
+            class="tw:fixed"
             style="top: 20px; right: 20px;"/>
     </div>
 </template>

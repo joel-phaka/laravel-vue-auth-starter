@@ -7,7 +7,7 @@ import Footer from "@/components/layouts/partials/Footer.vue";
 
 <template>
     <NavBar/>
-    <div class="app--main-container pl-3 pr-3 pb-4">
+    <div class="app--main-container tw:px-4 tw:pb-6">
         <slot></slot>
     </div>
     <Footer/>

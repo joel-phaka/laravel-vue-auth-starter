@@ -33,7 +33,7 @@ const {toggleThemeMode} = themeStore;
         rounded
         unstyled
         :disabled="isUpdatingThemeMode"
-        class="p-0 m-0 flex align-items-center justify-content-center cursor-pointer"
+        class="tw:p-0 tw:m-0 tw:flex tw:items-center tw:justify-center tw:cursor-pointer"
         :style="{'width': `${size}px`, 'height': `${size}px`, 'border-radius': (rounded ? '50%' : '6px') }"
         :pt:label:style="{display: 'none'}"
         @click="toggleThemeMode"/>

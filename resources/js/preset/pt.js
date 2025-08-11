@@ -2,7 +2,7 @@ export default {
     password: {
         pcInputText: {
             root: {
-                class: ['flex-1'],
+                class: ['tw:flex-1'],
             }
         },
     }

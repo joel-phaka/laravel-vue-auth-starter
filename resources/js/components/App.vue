@@ -40,9 +40,11 @@ watch(() => route.meta.title, setPageTitle, { immediate: true });
     </component>
     <div
         v-else
-        class="main-container flex md:align-items-center md:justify-content-center relative"
+        class="main-container tw:flex tw:md:items-center tw:md:justify-center tw:relative"
         style="min-height: 100vh">
-        <div class="fixed center-vertical-horizontal surface-ground" style="width: max-content; border-radius: 50%">
+        <div
+            class="tw:fixed tw:bg-surface-200 tw:dark:bg-surface-800 center-vertical-horizontal"
+            style="width: max-content; height: max-content; max-height: max-content; border-radius: 50%; aspect-ratio: 1 / 1;">
             <ProgressSpinner strokeWidth="4"/>
         </div>
     </div>
