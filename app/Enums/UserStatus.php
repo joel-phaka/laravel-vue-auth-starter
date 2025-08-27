@@ -8,4 +8,5 @@ enum UserStatus : string
     case INACTIVE ='inactive';
     case SUSPENDED = 'suspended';
     case BANNED = 'banned';
+    case LOCKED = 'locked';
 }

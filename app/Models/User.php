@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
@@ -108,5 +109,12 @@ class User extends Authenticatable implements MustVerifyEmailContract
         ]);
 
         return new NewAccessToken($token, $token->getKey().'|'.$plainTextToken);
+    }
+
+    public function authProviders(): BelongsToMany
+    {
+        return $this->belongsToMany(AuthProvider::class, 'auth_providers_users', 'user_id', 'auth_provider_id')
+            ->withPivot(['auth_provider_user_id'])
+            ->withTimestamps();
     }
 }

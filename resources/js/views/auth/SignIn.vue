@@ -129,15 +129,26 @@ const openExternalSignInWindow = (provider) => {
                 <div class="tw:flex-grow-0 tw:m-2 tw:text-gray-400">OR</div>
                 <div class="tw:flex-1 tw:border border-color"></div>
             </div>
-            <Button
-                class="tw:block tw:w-full"
-                variant="outlined"
-                @click="() => openExternalSignInWindow('google')">
-                <div class="tw:flex tw:items-center tw:justify-center">
-                    <img src="@/assets/google-logo.svg" alt="Google Logo" class="tw:w-[16px] tw:h-[16px]">
-                    <span class="tw:ml-2">Sign In with Google</span>
-                </div>
-            </Button>
+            <div class="tw:flex tw:flex-col tw:gap-2">
+                <Button
+                    class="tw:block tw:w-full"
+                    variant="outlined"
+                    @click="() => openExternalSignInWindow('google')">
+                    <div class="tw:flex tw:items-center tw:justify-center">
+                        <img src="@/assets/google-logo.svg" alt="Google Logo" class="tw:w-[16px] tw:h-[16px]">
+                        <span class="tw:ml-2">Sign In with Google</span>
+                    </div>
+                </Button>
+                <Button
+                    class="tw:block tw:w-full"
+                    variant="outlined"
+                    @click="() => openExternalSignInWindow('facebook')">
+                    <div class="tw:flex tw:items-center tw:justify-center">
+                        <i class="pi pi-facebook tw:text-blue-500" style="font-size:16px"></i>
+                        <span class="tw:ml-2">Sign In with Facebook</span>
+                    </div>
+                </Button>
+            </div>
             <p v-if="config.allowSignUp" class="tw:text-center tw:mt-8 tw:mb-0">
                 Don't have an account?
                 <router-link to="/signup" class="no-underline default-link">Sign Up</router-link>

@@ -81,16 +81,6 @@ class AppServiceProvider extends ServiceProvider
 
                 return strval($uri);
             });
-
-            $socialiteProviders = (array)config('auth.socialite.providers', []);
-
-            foreach ($socialiteProviders as $provider) {
-                if (is_array(config('services.' . $provider))) {
-                    config([
-                        "services.$provider.redirect" => config('app.url') . "/signin/$provider/callback",
-                    ]);
-                }
-            }
         }
     }
 

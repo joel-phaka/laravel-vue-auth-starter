@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Events\UserLoggedIn;
 use App\Events\UserRegistered;
 use App\Http\Controllers\Controller;
+use App\Models\AuthProvider;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -15,20 +17,20 @@ use Symfony\Component\HttpFoundation\Response as BaseResponse;
 
 class SocialLoginController extends Controller
 {
-    public function redirectToProvider(Request $request, $provider): BaseResponse
+    public function redirectToProvider(Request $request, AuthProvider $authProvider): BaseResponse
     {
         if (is_local_url(strval($request->query('return_url')))) {
             session(['return_url' => $request->query('return_url')]);
         }
 
-        return Socialite::driver($provider)
+        return Socialite::driver($authProvider->name)
             ->stateless()
             ->redirect();
     }
 
-    public function handleProviderCallback(Request $request, $provider): BaseResponse
+    public function handleProviderCallback(Request $request, AuthProvider $authProvider): BaseResponse
     {
-        $externalUser = Socialite::driver($provider)
+        $externalUser = Socialite::driver($authProvider->name)
             ->stateless()
             ->user();
 
@@ -38,6 +40,7 @@ class SocialLoginController extends Controller
         $email = $externalUser->getEmail();
 
         $user = User::firstWhere('email', $email);
+        $isNewUser = false;
 
         if (!$user) {
             $user = User::create([
@@ -46,11 +49,17 @@ class SocialLoginController extends Controller
                 'first_name' => $firstName,
                 'last_name' => $lastName,
             ]);
-
-            event(new UserRegistered($user));
+            $isNewUser = true;
+            $user->refresh();
         }
 
-        if (!$user) {
+        if ($user?->status == UserStatus::ACTIVE) {
+            if ($isNewUser) event(new UserRegistered($user));
+
+            $user->authProviders()->syncWithoutDetaching([
+                $authProvider->id => ['auth_provider_user_id' => $externalUser->getId()]
+            ]);
+        } else {
             return response()->redirectTo('/signin');
         }
 

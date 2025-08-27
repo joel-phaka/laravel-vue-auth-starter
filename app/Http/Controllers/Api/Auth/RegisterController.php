@@ -21,6 +21,7 @@ class RegisterController extends Controller
             'email' => $request->input('email'),
             'password' => $request->input('password'),
         ]);
+        $user->refresh();
 
         if (!$user) {
             return response()
