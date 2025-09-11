@@ -15,9 +15,9 @@ Route::group([
         ->name('auth.signin.provider.callback');*/
 
     Route::group([
-        'prefix' => '{authProvider}',
+        'prefix' => 'oauth/{oauthProvider}',
     ], function () {
-        Route::get('', [SocialLoginController::class, 'redirectToProvider'])
+        Route::get('/', [SocialLoginController::class, 'redirectToProvider'])
             ->name('auth.signin.provider');
         Route::get('callback', [SocialLoginController::class, 'handleProviderCallback'])
             ->name('auth.signin.provider.callback');

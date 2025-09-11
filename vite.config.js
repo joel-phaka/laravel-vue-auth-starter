@@ -5,7 +5,7 @@ import Components from 'unplugin-vue-components/vite';
 import {PrimeVueResolver} from '@primevue/auto-import-resolver';
 import {fileURLToPath, URL} from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
-//import tailwindcssPrimeUI from 'tailwindcss-primeui'
+import vueJsxPlugin from "@vitejs/plugin-vue-jsx";
 
 export default defineConfig({
     plugins: [
@@ -25,6 +25,7 @@ export default defineConfig({
                 },
             },
         }),
+        vueJsxPlugin(),
         Components({
             resolvers: [
                 PrimeVueResolver()

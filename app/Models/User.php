@@ -111,10 +111,10 @@ class User extends Authenticatable implements MustVerifyEmailContract
         return new NewAccessToken($token, $token->getKey().'|'.$plainTextToken);
     }
 
-    public function authProviders(): BelongsToMany
+    public function oauthProviders(): BelongsToMany
     {
-        return $this->belongsToMany(AuthProvider::class, 'auth_providers_users', 'user_id', 'auth_provider_id')
-            ->withPivot(['auth_provider_user_id'])
+        return $this->belongsToMany(OAuthProvider::class, 'oauth_providers_users', 'user_id', 'oauth_provider_id')
+            ->withPivot(['oauth_provider_user_id'])
             ->withTimestamps();
     }
 }

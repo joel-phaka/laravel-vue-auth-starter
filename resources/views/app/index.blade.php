@@ -14,6 +14,9 @@
 
         <!-- Scripts -->
         <script>
+            window.__xapp__ = @json($appConfig);
+        </script>
+        <script>
             if (!['dark', 'light'].includes(localStorage.getItem('themeMode'))) {
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 const themeMode = prefersDark ? 'dark' : 'light';

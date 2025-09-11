@@ -57,7 +57,6 @@ class HandleUserLoggedIn
         else if ($agent->iswebOS()) $loginLog->device_platform = 'webos';
         else if (stripos($loginLog->user_agent, 'kaios') !== false) $loginLog->device_platform = 'kaios';
         else if ($agent->isDesktop()) $loginLog->device_platform = 'web';
-        else $loginLog->device_platform = 'unknown';
 
         $loginLog->save();
     }

@@ -1,8 +1,10 @@
 <?php
 
 use App\Exceptions\AccessTokenException;
+use App\Exceptions\DisabledFeatureException;
 use App\Http\Middleware\DynamicAuth;
 use App\Http\Middleware\VerifyActiveUser;
+use App\Http\Middleware\VerifyFeature;
 use App\Http\Middleware\VerifyRecaptcha;
 use App\Http\Middleware\VerifyUserRole;
 use Illuminate\Foundation\Application;
@@ -31,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'auth.dynamic' => DynamicAuth::class,
             'verify.role' => VerifyUserRole::class,
+            'verify.feature' => VerifyFeature::class,
             'verify.active' => VerifyActiveUser::class,
             'verify.recaptcha' => VerifyRecaptcha::class,
         ]);
@@ -49,4 +52,5 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->json($e->toArray())
                 ->unauthorized();
         });
+
     })->create();

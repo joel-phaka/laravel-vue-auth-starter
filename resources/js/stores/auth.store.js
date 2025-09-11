@@ -33,6 +33,7 @@ export const useAuthStore = defineStore('auth', {
                 if (_.isFunction(callback)) await callback();
             } catch (error) {
                 this.authErrors.loginError = normaliseError(error);
+
                 console.log(error);
             } finally {
                 this.isLoggingIn = false;

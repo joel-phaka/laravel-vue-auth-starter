@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('oauth_providers', function (Blueprint $table) {
+        Schema::create('features', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
             $table->string('name')->unique();
-            $table->boolean('is_active')->default(false);
+            $table->boolean('enabled')->default(false);
+            $table->boolean('hidden')->default(true);
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('oauth_providers');
+        Schema::dropIfExists('features');
     }
 };

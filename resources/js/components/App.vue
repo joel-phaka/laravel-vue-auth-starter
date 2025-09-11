@@ -4,8 +4,13 @@ import {useRoute} from "vue-router";
 import {useRecaptchaProvider} from "vue-recaptcha";
 import layouts from "@/components/layouts/index.js";
 import useAuth from "@/composables/useAuth.js";
+import {useAppStore} from "@/stores/app.store.js";
 
-useRecaptchaProvider();
+const {appFeatures} = useAppStore();
+
+if (appFeatures.recaptcha) {
+    useRecaptchaProvider();
+}
 
 const route = useRoute();
 

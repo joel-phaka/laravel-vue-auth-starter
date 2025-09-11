@@ -41,7 +41,7 @@ const handleImageError = (e) => {
 </script>
 
 <template>
-	<div class="relative cursor-pointer" :style="{'width': `${size}px`, 'height': `${size}px`}" @click="handleClick">
+	<div class="tw:relative tw:cursor-pointer" :style="{'width': `${size}px`, 'height': `${size}px`}" @click="handleClick">
 		<Avatar
 			v-if="!user.profile_picture || showAvatar"
 			size="small"

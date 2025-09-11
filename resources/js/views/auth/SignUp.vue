@@ -5,46 +5,49 @@ import * as yup from "yup";
 import browserStorage from "@/lib/browser-storage.js";
 import {inject, ref} from "vue";
 import {Checkbox as RecaptchaCheckbox} from "vue-recaptcha";
-import {keysToSnakeCase} from "@/lib/utils.js";
+import {keysToSnakeCase, createFieldsSchema} from "@/lib/utils.js";
 import * as authService from "@/services/auth.service.js";
 import {useRouter} from "vue-router";
 import appLogo from "@/assets/app-logo.png";
+import {useAppStore} from "@/stores/app.store.js"
+import OAuthProviderLinks from "@/components/auth/OAuthProviderLinks.vue";
+
+const {appFeatures} = useAppStore();
 
 const router = useRouter();
 
 const setProcessing = inject('app:layout:auth:setProcessing');
 
-const schema = yup.object({
-    firstName: yup
-        .string()
-        .label("First Name")
-        .required(),
-    lastName: yup
-        .string()
-        .label("Last Name")
-        .required(),
-    email: yup
-        .string()
-        .label("Email")
-        .required()
-        .email(),
-    password: yup
-        .string()
-        .label("Password")
-        .required(),
-    passwordConfirmation: yup
-        .string()
-        .label("Confirm Password")
-        .required()
-        .oneOf([yup.ref("password")], 'Passwords do not match')
-        .required(),
-    acceptTerms: yup
-        .bool()
-        .oneOf([true], "Please read the terms and conditions and then accept them to continue."),
-    recaptchaToken: yup
-        .string()
-        .required("Please complete the reCAPTCHA check.")
-});
+const schema = createFieldsSchema({
+        firstName: yup
+            .string()
+            .label("First Name")
+            .required(),
+        lastName: yup
+            .string()
+            .label("Last Name")
+            .required(),
+        email: yup
+            .string()
+            .label("Email")
+            .required()
+            .email(),
+        password: yup
+            .string()
+            .label("Password")
+            .required(),
+        passwordConfirmation: yup
+            .string()
+            .label("Confirm Password")
+            .required()
+            .oneOf([yup.ref("password")], 'Passwords do not match')
+            .required(),
+        acceptTerms: yup
+            .bool()
+            .oneOf([true], "Please read the terms and conditions and then accept them to continue."),
+    },
+    true,
+);
 
 const { meta, defineField, errors, handleSubmit } = useForm({
     validationSchema: toTypedSchema(schema),
@@ -159,18 +162,18 @@ const onSubmit = handleSubmit(async (values) => {
                 <p v-if="!!errors.passwordConfirmation" class="tw:mt-2 tw:text-red-500">{{errors.passwordConfirmation}}</p>
             </div>
             <div>
-                <div class="tw:mb-3 tw:flex tw:items-center">
+                <div class="tw:mb-3 tw:flex tw:items-center tw:gap-2">
                     <Checkbox
                         v-model="acceptTerms"
                         v-bind="acceptTermsAttrs"
                         binary
                         input-id="acceptTerms"
                         name="acceptTerms"/>
-                    <label for="acceptTerms" class="ml-2 cursor-pointer">I accept terms and conditions</label>
+                    <label for="acceptTerms" class="cursor-pointer">I accept terms and conditions</label>
                 </div>
                 <p v-if="!!errors.acceptTerms" class="tw:mt-2 tw:text-red-500">{{errors.acceptTerms}}</p>
             </div>
-            <div class="tw:my-9 tw:flex tw:justify-center">
+            <div v-if="appFeatures.recaptcha" class="tw:my-9 tw:flex tw:justify-center">
                 <div>
                     <RecaptchaCheckbox v-model="recaptchaToken" v-bind="recaptchaTokenAttrs"/>
                     <div v-if="!!errors.recaptchaToken" class="tw:mt-2 tw:text-red-500">
@@ -182,6 +185,7 @@ const onSubmit = handleSubmit(async (values) => {
             <p class="tw:text-center tw:mt-8 tw:mb-0">
                 Already have an account? <router-link to="/signin" class="no-underline default-link">Sign In</router-link>
             </p>
+            <OAuthProviderLinks class="tw:mt-3"/>
         </div>
     </form>
 </template>

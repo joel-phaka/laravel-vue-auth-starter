@@ -1,5 +1,7 @@
 import * as changeCase from "change-case";
-import _ from "lodash";
+import _, {isFunction, isPlainObject} from "lodash";
+import * as yup from "yup";
+import {useAppStore} from "@/stores/app.store.js";
 
 export const PATH_REGEX = /^\/(([^\/]+\/?)*|[^\/]+)(\?#.*)*$/;
 
@@ -91,4 +93,24 @@ export function normaliseError(error) {
     err.isNormalised = true;
 
     return err;
+}
+
+export function createFieldsSchema(fields, useRecaptcha = false) {
+    const {appFeatures} = useAppStore();
+
+    if (useRecaptcha && appFeatures.recaptcha) {
+        fields.recaptchaToken = yup
+            .string()
+            .required("Please complete the reCAPTCHA check.")
+    }
+
+    return yup.object(fields);
+}
+
+export function arrayOnlyIf(condition, arr) {
+    if (condition && !!arr) {
+        return Array.isArray(arr) ? arr : [arr];
+    }
+
+    return [];
 }

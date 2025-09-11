@@ -2,7 +2,8 @@
 @import "primeicons/primeicons.css";
 @import "tailwindcss" prefix(tw);
 @import "tailwindcss-primeui";
-@custom-variant dark (&:where(.dark-mode, .dark-mode *));
+@custom-variant dark (&:where(html.dark-mode, html.dark-mode *));
+@custom-variant light (&:where(html:not(.dark-mode) &));
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

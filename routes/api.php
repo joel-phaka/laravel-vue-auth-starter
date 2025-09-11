@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Passport\Http\Controllers\AccessTokenController as PassportAccessTokenController;
 
 Route::group([
-    'prefix' => 'oauth'
+    'prefix' => 'oauth',
+    'middleware' => ['verify.feature:oauth']
 ], function () {
     Route::middleware('throttle')
         ->post('token', [PassportAccessTokenController::class, 'issueToken'])
@@ -21,17 +22,18 @@ Route::group([
 Route::group([
     'prefix' => 'auth'
 ], function () {
-    Route::middleware(['verify.recaptcha'])
+    Route::middleware('verify.recaptcha')
         ->group(function () {
             Route::post('login', [AuthController::class, 'login'])
                 ->name('api.auth.login');
             Route::post('register', [RegisterController::class, 'register'])
+                ->middleware(['verify.feature:user_registration'])
                 ->name('api.auth.register');
         });
 
     Route::group([
         'prefix' => 'password',
-        'middleware' => ['throttle:6,1']
+        'middleware' => ['verify.feature:password_reset', 'throttle:6,1']
     ], function () {
         Route::post('email', [ForgotPasswordController::class, 'sendResetLinkEmail'])
             ->name('api.auth.password.email');
@@ -40,12 +42,16 @@ Route::group([
             ->name('api.auth.password.reset');
     });
 
-    Route::post('token', [AuthController::class, 'issueToken'])
-        ->name('api.auth.token');
-    Route::post('token/refresh', [AuthController::class, 'refreshToken'])
-        ->name('api.auth.token.refresh');
+    Route::group([
+        'middleware' => ['verify.feature:oauth,token_auth']
+    ], function () {
+        Route::post('token', [AuthController::class, 'issueToken'])
+            ->name('api.auth.token');
+        Route::post('token/refresh', [AuthController::class, 'refreshToken'])
+            ->name('api.auth.token.refresh');
+    });
 
-    Route::middleware(['auth.dynamic'])
+    Route::middleware('auth.dynamic')
         ->group(function () {
             Route::get('user', [AuthController::class, 'user'])
                 ->name('api.auth.user');
