@@ -90,35 +90,35 @@ class Feature
 
     public static function set(string $name, bool $enabled, array $options = []): void
     {
-        DB::table('features')
-            ->updateOrInsert(
-                ['name' => $name],
-                [
-                    'enabled' => (int)$enabled,
-                    ...(isset($options['hidden']) ? ['hidden' => (int)$options['hidden']] : [])
-                ]
-            );
+        self::setMany([
+            [
+                'name' => $name,
+                'enabled' => (int)$enabled,
+                ...(isset($options['hidden']) ? ['hidden' => (int)$options['hidden']] : []),
+            ],
+        ]);
+    }
 
-        $feature = DB::table('features')->where('name', $name)->first();
+    public static function setMany(array $features): void
+    {
+        $data = [];
 
-        if (!$feature) {
-            DB::table('features')
-                ->insert([
-                    'name' => $name,
-                    'enabled' => (int)$enabled,
-                    ...(isset($options['hidden']) ? ['hidden' => (int)$options['hidden']] : []),
-                    'created_at' => $now = now(),
-                    'updated_at' => $now,
-                ]);
-        } else {
-            DB::table('features')
-                ->where('name', $name)
-                ->update([
-                    'enabled' => (int)$enabled,
-                    ...(isset($options['hidden']) ? ['hidden' => (int)$options['hidden']] : []),
-                    'updated_at' => now(),
-                ]);
+        foreach ($features as $feature) {
+            $data[] = [
+                'name' => $feature['name'],
+                'enabled' => (int)($feature['enabled'] ?? false),
+                ...(isset($feature['hidden']) ? ['hidden' => (int)$feature['hidden']] : []),
+                'created_at' => $now = now(),
+                'updated_at' => $now,
+            ];
         }
+
+        DB::table('features')
+            ->upsert(
+                values: $data,
+                uniqueBy: ['name'],
+                update: ['enabled', 'hidden', 'updated_at']
+            );
 
         self::clearCache();
     }

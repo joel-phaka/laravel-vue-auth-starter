@@ -33,7 +33,7 @@ const menuPtOptions = {
         }
     },
     itemLink: {
-        class: ['py-3'],
+        class: ['tw:py-4!'],
         'aria-hidden': 'false'
     }
 };

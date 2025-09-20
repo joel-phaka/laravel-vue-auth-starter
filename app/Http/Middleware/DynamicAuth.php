@@ -23,8 +23,10 @@ class DynamicAuth
 
         if (str_starts_with($authHeader, 'Bearer ')) {
             Auth::shouldUse('api');
+            config(['auth.auth_type' => 'token']);
         } else {
             Auth::shouldUse('sanctum');
+            config(['auth.auth_type' => 'session']);
         }
 
         if (!Auth::check()) {

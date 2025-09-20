@@ -30,7 +30,7 @@ const authRoutes = [
             hideFooter: true,
         },
     }),
-    ...arrayOnlyIf(appFeatures.user_registration, {
+    ...arrayOnlyIf(appFeatures.email_verification, {
         path: '/verify',
         component: () => import('@/views/auth/Verify.vue'),
         name: 'verify',

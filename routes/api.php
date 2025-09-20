@@ -60,7 +60,7 @@ Route::group([
 
             Route::group([
                 'prefix' => 'verify',
-                'middleware' => ['throttle:6,1']
+                'middleware' => ['verify.feature:email_verification', 'throttle:6,1']
             ], function () {
                 Route::group([
                     'prefix' => 'email',

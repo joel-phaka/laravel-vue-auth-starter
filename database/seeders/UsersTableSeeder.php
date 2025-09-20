@@ -19,7 +19,6 @@ class UsersTableSeeder extends Seeder
             $superAdminRole = DB::table('roles')
                 ->select(['id'])
                 ->where('name', UserRole::SUPER_ADMIN->name)
-                ->where('level', UserRole::SUPER_ADMIN->value)
                 ->first();
 
             if (!!$superAdminRole) {

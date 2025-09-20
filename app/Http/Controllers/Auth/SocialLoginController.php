@@ -55,8 +55,8 @@ class SocialLoginController extends Controller
                 'last_name' => $lastName,
             ]);
 
-            $user->refresh();
-            $isNewUser = true;
+            $user?->refresh();
+            $isNewUser = !!$user;
         }
 
         if ($user?->status == UserStatus::ACTIVE) {
