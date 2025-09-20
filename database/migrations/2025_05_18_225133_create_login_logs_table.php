@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\AuthType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,16 +15,18 @@ return new class extends Migration
         Schema::create('login_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
+            $table->enum('auth_type', enum_values(AuthType::class))->index();
+            $table->string('auth_type_id')->nullable()->default(null);
             $table->string('ip')->nullable();
             $table->text('user_agent')->nullable();
             $table->string('device_platform')->nullable();
             $table->string('location')->nullable();
-            $table->string('country_code')->nullable();
+            $table->string('country_code')->nullable()->index();
             $table->string('region_code')->nullable();
-            $table->string('are_code')->nullable();
+            $table->string('area_code')->nullable();
             $table->string('zip_code')->nullable();
             $table->string('timezone')->nullable();
-            $table->timestamp('date')->nullable();
+            $table->timestamp('created_at')->nullable()->index();
         });
     }
 

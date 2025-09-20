@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use App\Enums\AuthType;
 use App\Enums\UserStatus;
 use App\Events\UserLoggedIn;
 use App\Exceptions\AccessTokenException;
@@ -9,6 +10,7 @@ use App\Support\AuthUtils;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Auth\LoginRequest;
 use App\Http\Requests\Api\Auth\RefreshTokenRequest;
+use App\Support\UserLoginInfo;
 use Carbon\Carbon;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
@@ -34,7 +36,7 @@ class AuthController extends Controller
                 ->unauthorized()
         );
 
-        event(new UserLoggedIn(Auth::user()));
+        event(new UserLoggedIn(new UserLoginInfo(Auth::user(), AuthType::SESSION, session()->getId())));
 
         return response()->json(Auth::user());
     }
@@ -163,10 +165,13 @@ class AuthController extends Controller
         ];
 
         $tokens = $this->getTokens($credentials);
+        $user = $tokens['user'];
+        $accessToken = $tokens['access_token'];
+        $accessTokenId = (new PassportToken($accessToken))->token_id;
 
-        Auth::login($tokens['user']);
+        Auth::login($user);
 
-        event(new UserLoggedIn($tokens['user']));
+        event(new UserLoggedIn(new UserLoginInfo($user, AuthType::ACCESS_TOKEN, $accessTokenId)));
 
         return response()->json(Arr::except($tokens, ['user']));
     }

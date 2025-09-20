@@ -5,6 +5,8 @@ namespace App\Listeners;
 use App\Events\UserLoggedIn;
 use App\Models\LoginLog;
 use App\Models\User;
+use App\Support\UserLoginInfo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use Jenssegers\Agent\Agent;
 use Stevebauman\Location\Facades\Location;
@@ -12,6 +14,8 @@ use Stevebauman\Location\Facades\Location;
 
 class HandleUserLoggedIn
 {
+    public UserLoginInfo $userLoginInfo;
+
     /**
      * Create the event listener.
      */
@@ -25,16 +29,19 @@ class HandleUserLoggedIn
      */
     public function handle(UserLoggedIn $event): void
     {
-        $this->logLogin($event->getUser());
+        $this->userLoginInfo = $event->getUserLoginInfo();
+        $this->logLogin();
     }
 
-    private function logLogin(User $user): void
+    private function logLogin(): void
     {
         $loginLog = new LoginLog();
-        $loginLog->user_id = $user->getAuthIdentifier();
+        $loginLog->user_id = $this->userLoginInfo->getUser()->id;;
+        $loginLog->auth_type = $this->userLoginInfo->getAuthType()->value;
+        $loginLog->auth_type_id = (string)$this->userLoginInfo->getAuthTypeId();
         $loginLog->ip = request()->ip();
         $loginLog->user_agent = request()->header('user-agent');
-        $loginLog->date = Carbon::now();
+        $loginLog->created_at = Carbon::now();
 
         if (!!$loginLog->ip &&
             !!($location = Location::get($loginLog->ip)) &&
@@ -44,7 +51,7 @@ class HandleUserLoggedIn
             $loginLog->location = $location->countryName . (!!$location->regionName ? ", {$location->regionName}" : '') . (!!$location->cityName ? ", {$location->cityName}" : '');
             $loginLog->country_code = $location->countryCode;
             $loginLog->region_code = $location->regionCode;
-            $loginLog->are_code = $location->areaCode;
+            $loginLog->area_code = $location->areaCode;
             $loginLog->zip_code = $location->zipCode;
             $loginLog->timezone = $location->timezone;
         }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\AuthType;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Events\UserLoggedIn;
@@ -11,6 +12,7 @@ use App\Models\OAuthProvider;
 use App\Models\Role;
 use App\Models\User;
 use App\Support\Feature;
+use App\Support\UserLoginInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
@@ -71,7 +73,7 @@ class SocialLoginController extends Controller
 
         Auth::login($user);
 
-        event(new UserLoggedIn($user));
+        event(new UserLoggedIn(new UserLoginInfo($user, AuthType::SESSION, session()->getId())));
 
         $returnUrl = strval(session()->pull('return_url'));
         $returnToPath = parse_url($returnUrl, PHP_URL_PATH) ?: '/';

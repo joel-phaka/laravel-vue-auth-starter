@@ -9,16 +9,18 @@ class LoginLog extends Model
 {
     protected $fillable = [
         'user_id',
+        'auth_type',
+        'auth_type_id',
         'ip',
         'user_agent',
         'device_platform',
         'location',
         'country_code',
         'region_code',
-        'are_code',
+        'area_code',
         'zip_code',
         'timezone',
-        'date',
+        'created_at',
     ];
 
     public $timestamps = false;

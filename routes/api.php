@@ -22,14 +22,24 @@ Route::group([
 Route::group([
     'prefix' => 'auth'
 ], function () {
-    Route::middleware('verify.recaptcha')
-        ->group(function () {
-            Route::post('login', [AuthController::class, 'login'])
-                ->name('api.auth.login');
-            Route::post('register', [RegisterController::class, 'register'])
-                ->middleware(['verify.feature:user_registration'])
-                ->name('api.auth.register');
-        });
+    Route::group([
+        'middleware' => ['verify.recaptcha']
+    ], function () {
+        Route::post('login', [AuthController::class, 'login'])
+            ->name('api.auth.login');
+        Route::post('register', [RegisterController::class, 'register'])
+            ->middleware(['verify.feature:user_registration'])
+            ->name('api.auth.register');
+    });
+
+    Route::group([
+        'middleware' => ['verify.feature:oauth,token_auth']
+    ], function () {
+        Route::post('token', [AuthController::class, 'issueToken'])
+            ->name('api.auth.token');
+        Route::post('token/refresh', [AuthController::class, 'refreshToken'])
+            ->name('api.auth.token.refresh');
+    });
 
     Route::group([
         'prefix' => 'password',
@@ -40,15 +50,6 @@ Route::group([
         Route::post('reset', [ResetPasswordController::class, 'reset'])
             ->middleware(['verify.recaptcha'])
             ->name('api.auth.password.reset');
-    });
-
-    Route::group([
-        'middleware' => ['verify.feature:oauth,token_auth']
-    ], function () {
-        Route::post('token', [AuthController::class, 'issueToken'])
-            ->name('api.auth.token');
-        Route::post('token/refresh', [AuthController::class, 'refreshToken'])
-            ->name('api.auth.token.refresh');
     });
 
     Route::middleware('auth.dynamic')
