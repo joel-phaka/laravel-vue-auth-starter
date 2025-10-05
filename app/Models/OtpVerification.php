@@ -120,3 +120,4 @@ class OtpVerification extends Model
         return $query->where('expires_at', '>', now());
     }
 }
+

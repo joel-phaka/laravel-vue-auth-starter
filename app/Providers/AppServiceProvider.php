@@ -31,57 +31,57 @@ class AppServiceProvider extends ServiceProvider
 
     private function loadDynamicConfigs(): void
     {
-        if (!app()->runningInConsole()) {
-            $baseUrl = base_url();
+        if (!app()->runningInConsole()) return;
 
-            config([
-                'app.url' => $baseUrl,
-                'cors.allowed_origins' => [$baseUrl],
-                'sanctum.stateful' => array_unique(
-                    array_filter(
-                        array_merge(((array)config('sanctum.stateful')), [parse_url($baseUrl, PHP_URL_HOST)]),
-                        'boolval'
-                    )
-                ),
-            ]);
+        $baseUrl = base_url();
 
-            URL::useOrigin(config('app.url'));
+        config([
+            'app.url' => $baseUrl,
+            'cors.allowed_origins' => [$baseUrl],
+            'sanctum.stateful' => array_unique(
+                array_filter(
+                    array_merge(((array)config('sanctum.stateful')), [parse_url($baseUrl, PHP_URL_HOST)]),
+                    'boolval'
+                )
+            ),
+        ]);
 
-            if (str_starts_with(config('app.url'), "https")) {
-                URL::forceScheme('https');
+        URL::useOrigin(config('app.url'));
+
+        if (str_starts_with(config('app.url'), "https")) {
+            URL::forceScheme('https');
+        }
+
+        Paginator::currentPathResolver(function () {
+            $path = trim(request()->path(), '/');
+
+            if (!!$path && !str_starts_with($path, '?')) {
+                $path = '/' . $path;
             }
 
-            Paginator::currentPathResolver(function () {
-                $path = trim(request()->path(), '/');
+            return config('app.url') . $path;
+        });
 
-                if (!!$path && !str_starts_with($path, '?')) {
-                    $path = '/' . $path;
-                }
+        VerifyEmail::createUrlUsing(function ($notifiable) {
+            $uri = Uri::of(config('app.url'))
+                ->withPath('verify')
+                ->withQuery([
+                    'id' => $notifiable->getKey(),
+                    'hash' => sha1($notifiable->getEmailForVerification()),
+                ]);
 
-                return config('app.url') . $path;
-            });
+            return sign_url($uri, 60 * 60);
+        });
 
-            VerifyEmail::createUrlUsing(function ($notifiable) {
-                $uri = Uri::of(config('app.url'))
-                    ->withPath('verify')
-                    ->withQuery([
-                        'id' => $notifiable->getKey(),
-                        'hash' => sha1($notifiable->getEmailForVerification()),
-                    ]);
+        ResetPassword::createUrlUsing(function ($notifiable, $token) {
+            $uri = Uri::of(config('app.url'))
+                ->withPath('password/reset/' . $token)
+                ->withQuery([
+                    'email' => $notifiable->getEmailForPasswordReset(),
+                ]);
 
-                return sign_url($uri, 60 * 60);
-            });
-
-            ResetPassword::createUrlUsing(function ($notifiable, $token) {
-                $uri = Uri::of(config('app.url'))
-                    ->withPath('password/reset/' . $token)
-                    ->withQuery([
-                        'email' => $notifiable->getEmailForPasswordReset(),
-                    ]);
-
-                return strval($uri);
-            });
-        }
+            return strval($uri);
+        });
     }
 
     private function configurePassport(): void

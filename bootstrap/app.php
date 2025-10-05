@@ -32,10 +32,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'auth.dynamic' => DynamicAuth::class,
-            'verify.role' => VerifyUserRole::class,
-            'verify.feature' => VerifyFeature::class,
-            'verify.active' => VerifyActiveUser::class,
-            'verify.recaptcha' => VerifyRecaptcha::class,
+            'role' => VerifyUserRole::class,
+            'feature' => VerifyFeature::class,
+            'active' => VerifyActiveUser::class,
+            'recaptcha' => VerifyRecaptcha::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [

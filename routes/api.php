@@ -10,7 +10,7 @@ use Laravel\Passport\Http\Controllers\AccessTokenController as PassportAccessTok
 
 Route::group([
     'prefix' => 'oauth',
-    'middleware' => ['verify.feature:oauth']
+    'middleware' => ['feature:oauth']
 ], function () {
     Route::middleware('throttle')
         ->post('token', [PassportAccessTokenController::class, 'issueToken'])
@@ -23,17 +23,17 @@ Route::group([
     'prefix' => 'auth'
 ], function () {
     Route::group([
-        'middleware' => ['verify.recaptcha']
+        'middleware' => ['recaptcha']
     ], function () {
         Route::post('login', [AuthController::class, 'login'])
             ->name('api.auth.login');
         Route::post('register', [RegisterController::class, 'register'])
-            ->middleware(['verify.feature:user_registration'])
+            ->middleware(['feature:user_registration'])
             ->name('api.auth.register');
     });
 
     Route::group([
-        'middleware' => ['verify.feature:oauth,token_auth']
+        'middleware' => ['feature:oauth,token_auth']
     ], function () {
         Route::post('token', [AuthController::class, 'issueToken'])
             ->name('api.auth.token');
@@ -43,12 +43,12 @@ Route::group([
 
     Route::group([
         'prefix' => 'password',
-        'middleware' => ['verify.feature:password_reset', 'throttle:6,1']
+        'middleware' => ['feature:password_reset', 'throttle:6,1']
     ], function () {
         Route::post('email', [ForgotPasswordController::class, 'sendResetLinkEmail'])
             ->name('api.auth.password.email');
         Route::post('reset', [ResetPasswordController::class, 'reset'])
-            ->middleware(['verify.recaptcha'])
+            ->middleware(['recaptcha'])
             ->name('api.auth.password.reset');
     });
 
@@ -61,7 +61,7 @@ Route::group([
 
             Route::group([
                 'prefix' => 'verify',
-                'middleware' => ['verify.feature:email_verification', 'throttle:6,1']
+                'middleware' => ['feature:email_verification', 'throttle:6,1']
             ], function () {
                 Route::group([
                     'prefix' => 'email',
