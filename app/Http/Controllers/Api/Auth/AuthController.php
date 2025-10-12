@@ -30,15 +30,9 @@ class AuthController extends Controller
 {
     public function login(LoginRequest $request): JsonResponse
     {
-        abort_if(
-            !Auth::attempt($request->only('email', 'password'), $request->boolean('remember_me')),
-            response()
-                ->json([
-                    'message' => 'Unauthorized',
-                    'reason' => 'auth_invalid_credentials'
-                ])
-                ->unauthorized()
-        );
+        if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember_me'))) {
+            throw new LoginException(reason: 'invalid_credentials');
+        }
 
         $this->triggerUserLoggedInEvent(Auth::user(), AuthType::SESSION, session()->id());;
 
@@ -165,6 +159,7 @@ class AuthController extends Controller
         $user = $tokens['user'];
         $accessTokenId = AuthUtils::findTokenIdByAccessToken($tokens['access_token']);
 
+        Auth::login($user);
         $this->triggerUserLoggedInEvent($user, AuthType::ACCESS_TOKEN, $accessTokenId);
 
         return response()->json(Arr::except($tokens, ['user']));

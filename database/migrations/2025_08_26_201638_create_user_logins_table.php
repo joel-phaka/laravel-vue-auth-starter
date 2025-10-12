@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
-            $table->enum('auth_type', enum_values(AuthType::class))->index();
             $table->enum('auth_state', enum_values(AuthState::class))->index();
+            $table->enum('auth_type', enum_values(AuthType::class))->index();
             $table->string('auth_type_id')->nullable()->default(null);
             $table->foreignId('oauth_provider_id')
                 ->nullable()

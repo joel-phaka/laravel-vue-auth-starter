@@ -1,10 +1,7 @@
 <?php
 
-use App\Exceptions\AccessTokenException;
-use App\Exceptions\DisabledFeatureException;
 use App\Exceptions\LoginException;
 use App\Http\Middleware\DynamicAuth;
-use App\Http\Middleware\VerifyActiveUser;
 use App\Http\Middleware\VerifyAuthState;
 use App\Http\Middleware\VerifyFeature;
 use App\Http\Middleware\VerifyRecaptcha;
@@ -47,7 +44,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->statefulApi();
-        $middleware->append(VerifyActiveUser::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Handle LoginException

@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Support\Auth\AuthEventData;
 use App\Support\Feature;
 use App\Traits\CreatesUserLogin;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class HandleUserRegistered
@@ -29,9 +30,10 @@ class HandleUserRegistered
      */
     public function handle(UserRegistered $event): void
     {
-        $isEmailVerificationEnabled = Feature::isEnabled('email_verification');
         $this->authEventData = $event->getAuthEventData();
         $user = $event->getAuthEventData()->getUser();
+
+        $isEmailVerificationEnabled = Feature::isEnabled('email_verification');
         $authState = $isEmailVerificationEnabled
             ? AuthState::PENDING_REGISTRATION_VERIFICATION
             : AuthState::LOGGED_IN;

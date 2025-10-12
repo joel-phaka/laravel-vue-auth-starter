@@ -29,14 +29,14 @@ class HandleUserLoggedIn
      */
     public function handle(UserLoggedIn $event): void
     {
-        $isOtpVerificationEnabled = Feature::isEnabled('otp_verification');
         $this->authEventData = $event->getAuthEventData();
         $user = $event->getAuthEventData()->getUser();
+
+        $isOtpVerificationEnabled = Feature::isEnabled('otp_verification');
         $authState = $isOtpVerificationEnabled
             ? AuthState::PENDING_LOGIN_VERIFICATION
             : AuthState::LOGGED_IN;
 
-        if (!Auth::check()) Auth::login($user);
 
         $this->createUserLogin($authState, $event->getAuthEventData());
     }

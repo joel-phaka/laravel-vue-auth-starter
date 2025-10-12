@@ -231,7 +231,7 @@ class AuthUtils
         return (new PassportToken($accessToken))?->token_id;
     }
 
-    public static function getCurrentLogin(): UserLogin
+    public static function getCurrentLogin(): UserLogin|null
     {
         $guard = Auth::getDefaultDriver();
         $authType = match ($guard) {
@@ -239,7 +239,7 @@ class AuthUtils
             'api' => AuthType::ACCESS_TOKEN,
         };
         $authTypeId = match ($authType) {
-            AuthType::SESSION => session()->getId(),
+            AuthType::SESSION => session()->id(),
             AuthType::ACCESS_TOKEN => AuthUtils::findTokenIdByAccessToken(preg_split('/\s+/', request()->bearerToken())[0] ?? '')
         };
 

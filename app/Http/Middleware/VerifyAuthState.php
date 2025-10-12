@@ -7,6 +7,7 @@ use App\Exceptions\AuthStateException;
 use App\Exceptions\LoginException;
 use App\Support\Auth\AuthUtils;
 use Closure;
+use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +27,8 @@ class VerifyAuthState
         }
 
         $currentLogin = AuthUtils::getCurrentLogin();
+
+        if (!$currentLogin) throw new LoginException();
 
         if ($currentLogin->auth_state == AuthState::LOGGED_IN) {
             return $next($request);
