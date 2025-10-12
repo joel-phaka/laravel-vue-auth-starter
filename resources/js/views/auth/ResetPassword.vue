@@ -7,7 +7,10 @@ import appLogo from "@/assets/app-logo.png"
 import {Checkbox as RecaptchaCheckbox} from "vue-recaptcha";
 import * as authService from "@/services/auth.service.js";
 import {useRoute, useRouter} from "vue-router";
-import {keysToSnakeCase} from "@/lib/utils.js";
+import {keysToSnakeCase, createFieldsSchema} from "@/lib/utils.js";
+import {useAppStore} from "@/stores/app.store.js"
+
+const {appFeatures} = useAppStore();
 
 const props = defineProps(['token']);
 
@@ -19,21 +22,20 @@ const email = route.query.email;
 
 const setProcessing = inject('app:layout:auth:setProcessing');
 
-const schema = yup.object({
-    password: yup
-        .string()
-        .label("Password")
-        .required(),
-    passwordConfirmation: yup
-        .string()
-        .label("Confirm Password")
-        .required()
-        .oneOf([yup.ref("password")], 'Passwords do not match')
-        .required(),
-    recaptchaToken: yup
-        .string()
-        .required("Please complete the reCAPTCHA check.")
-});
+const schema = createFieldsSchema({
+        password: yup
+            .string()
+            .label("Password")
+            .required(),
+        passwordConfirmation: yup
+            .string()
+            .label("Confirm Password")
+            .required()
+            .oneOf([yup.ref("password")], 'Passwords do not match')
+            .required(),
+    },
+    true
+);
 
 const { meta, defineField, errors, handleSubmit } = useForm({
     validationSchema: toTypedSchema(schema),
@@ -113,7 +115,7 @@ const onSubmit = handleSubmit(async (values) => {
                 </div>
             </div>
             <div v-if="!isPasswordReset">
-                <div class="tw:flex tw:justify-center">
+                <div v-if="appFeatures.recaptcha" class="tw:flex tw:justify-center">
                     <div>
                         <RecaptchaCheckbox v-model="recaptchaToken" v-bind="recaptchaTokenAttrs"/>
                         <div v-if="!!errors.recaptchaToken" class="tw:mt-2 tw:text-red-500">

@@ -32,7 +32,6 @@ provide('app:layout:auth:setProcessing', (v) => {
 <style scoped>
 .form-container {
     width: 100%;
-    border-radius: 8px;
     height: max-content;
 }
 @media screen and (min-width: 768px) {

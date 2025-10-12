@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->integer('level');
             $table->timestamps();
+
+            $table->index(['level']);
+            $table->index(['created_at']);
         });
     }
 

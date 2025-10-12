@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
+use App\Enums\AuthState;
+use App\Enums\AuthType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class LoginLog extends Model
+class UserLogin extends Model
 {
     protected $fillable = [
         'user_id',
         'auth_type',
+        'auth_state',
         'auth_type_id',
+        'oauth_provider_id',
         'ip',
         'user_agent',
         'device_platform',
@@ -24,6 +28,11 @@ class LoginLog extends Model
     ];
 
     public $timestamps = false;
+
+    protected $casts = [
+        'auth_type' => AuthType::class,
+        'auth_state' => AuthState::class
+    ];
 
     public function user(): BelongsTo
     {

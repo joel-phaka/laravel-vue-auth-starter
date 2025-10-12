@@ -2,17 +2,15 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\AuthState;
 use App\Enums\UserStatus;
-use App\Exceptions\AuthStateException;
 use App\Exceptions\LoginException;
-use App\Support\Auth\AuthUtils;
+use App\Exceptions\UserStatusException;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class DynamicAuth
+class VerifyUserStatus
 {
     /**
      * Handle an incoming request.
@@ -20,21 +18,16 @@ class DynamicAuth
      * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
      * @throws LoginException
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, string $status): Response
     {
-        if (!$request->is('api/*')) return $next($request);
-
-        // Use JWT if the Authorization header starts with 'Bearer'
-        $authHeader = strval($request->header('Authorization'));
-
-        if (str_starts_with($authHeader, 'Bearer ')) {
-            Auth::shouldUse('api');
-        } else {
-            Auth::shouldUse('sanctum');
-        }
-
         if (!Auth::check()) {
             throw new LoginException();
+        }
+
+        $expectedUserStatus = UserStatus::tryFrom($status);
+
+        if ($expectedUserStatus != Auth::user()->status) {
+            throw new UserStatusException(Auth::user()->status);
         }
 
         return $next($request);

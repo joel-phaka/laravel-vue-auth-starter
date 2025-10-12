@@ -12,12 +12,12 @@ const defaultGuards = {
                 to.meta.emailVerificationStatus = 'verified';
                 next();
             } catch (error) {
-                const errorCode = error.response?.data?.error_code;
+                const reason = error.response?.data?.reason;
 
-                if (errorCode === 'email_verification_already_verified') {
+                if (reason === 'email_verification_already_verified') {
                     next('/');
                 } else {
-                    to.meta.emailVerificationStatus = errorCode === 'email_verification_expired_url'
+                    to.meta.emailVerificationStatus = reason === 'email_verification_expired_url'
                         ? 'expired'
                         : 'failed';
 

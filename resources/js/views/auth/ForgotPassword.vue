@@ -5,22 +5,25 @@ import * as yup from "yup";
 import {inject, ref} from "vue";
 import {Checkbox as RecaptchaCheckbox} from "vue-recaptcha";
 import * as authService from "@/services/auth.service.js";
+import {createFieldsSchema} from "@/lib/utils.js";
 import {useRouter} from "vue-router";
+import {useAppStore} from "@/stores/app.store.js"
+
+const {appFeatures} = useAppStore();
 
 const router = useRouter();
 
 const setProcessing = inject('app:layout:auth:setProcessing');
 
-const schema = yup.object({
-    email: yup
-        .string()
-        .label("Email")
-        .required()
-        .email(),
-    recaptchaToken: yup
-        .string()
-        .required("Please complete the reCAPTCHA check.")
-});
+const schema = createFieldsSchema({
+        email: yup
+            .string()
+            .label("Email")
+            .required()
+            .email(),
+    },
+    true
+);
 
 const { meta, defineField, errors, handleSubmit } = useForm({
     validationSchema: toTypedSchema(schema),
@@ -79,7 +82,7 @@ const onSubmit = handleSubmit(async (values) => {
                 </div>
             </div>
             <div v-if="!isEmailSent">
-                <div class="tw:flex tw:justify-center">
+                <div v-if="appFeatures.recaptcha" class="tw:flex tw:justify-center">
                     <div>
                         <RecaptchaCheckbox v-model="recaptchaToken" v-bind="recaptchaTokenAttrs"/>
                         <div v-if="!!errors.recaptchaToken" class="tw:mt-2 tw:text-red-500">

@@ -94,7 +94,7 @@ class Feature
             [
                 'name' => $name,
                 'enabled' => (int)$enabled,
-                ...(isset($options['hidden']) ? ['hidden' => (int)$options['hidden']] : []),
+                'hidden' => !empty(self::getHidden([$name])) ? 1 : 0,
             ],
         ]);
     }
@@ -107,7 +107,7 @@ class Feature
             $data[] = [
                 'name' => $feature['name'],
                 'enabled' => (int)($feature['enabled'] ?? false),
-                ...(isset($feature['hidden']) ? ['hidden' => (int)$feature['hidden']] : []),
+                'hidden' => !empty(self::getHidden([$feature['name']])) ? 1 : 0,
                 'created_at' => $now = now(),
                 'updated_at' => $now,
             ];

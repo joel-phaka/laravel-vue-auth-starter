@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('otp_verifications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('login_log_id')->constrained('login_logs');
+            $table->foreignId('user_login_id')->constrained('user_logins')->cascadeOnDelete();;
             $table->enum('channel', ['email', 'phone_number'])->index();
             $table->string('otp_hash');
             $table->boolean('verified')->default(0)->index();
+            $table->timestamp('expires_at')->index();
             $table->timestamps();
-            $table->timestamp('expires_at');
         });
     }
 

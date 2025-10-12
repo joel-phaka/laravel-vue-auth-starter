@@ -9,28 +9,16 @@
 @source '../../storage/framework/views/*.php';
 @source '../**/*.{html,blade.php,js,ts,jsx,tsx,vue}';
 
-:root {
-    --x-container-bg-color: #f5f5f5;
-    --x-border-color: var(--p-gray-300);
-    --x-navbar-bg-color: rgba(255,255,255,0.6);
-}
-
-:root {
-    font-family: 'Inter', sans-serif;
-}
-
 @supports (font-variation-settings: normal) {
     :root { font-family: 'Inter var', sans-serif; }
 }
 
-h1 { @apply tw:text-[2rem] tw:font-bold tw:my-[0.67rem]; }
-h2 { @apply tw:text-[1.5rem] tw:font-bold tw:my-[0.83rem]; }
-h3 { @apply tw:text-[1.17rem] tw:font-bold tw:my-[1rem]; }
-h4 { @apply tw:text-[1rem] tw:font-bold tw:my-[1.33rem]; }
-h5 { @apply tw:text-[1rem] tw:font-bold tw:my-[1.67rem]; }
-h6 { @apply tw:text-[0.67rem] tw:font-bold tw:my-[2.33rem]; }
-
-a.default-link { @apply tw:text-blue-500 tw:hover:text-blue-700; }
+:root {
+    font-family: 'Inter', sans-serif;
+    --x-container-bg-color: #f5f5f5;
+    --x-border-color: var(--p-gray-300);
+    --x-navbar-bg-color: rgba(255,255,255,0.6);
+}
 
 html, body {
     padding: 0;
@@ -49,6 +37,15 @@ html.dark-mode {
 html.dark-mode a.default-link {
     @apply tw:text-blue-400 tw:hover:text-blue-500;
 }
+
+h1 { @apply tw:text-[2rem] tw:font-bold tw:my-[0.67rem]; }
+h2 { @apply tw:text-[1.5rem] tw:font-bold tw:my-[0.83rem]; }
+h3 { @apply tw:text-[1.17rem] tw:font-bold tw:my-[1rem]; }
+h4 { @apply tw:text-[1rem] tw:font-bold tw:my-[1.33rem]; }
+h5 { @apply tw:text-[1rem] tw:font-bold tw:my-[1.67rem]; }
+h6 { @apply tw:text-[0.67rem] tw:font-bold tw:my-[2.33rem]; }
+
+a.default-link { @apply tw:text-blue-500 tw:hover:text-blue-700; }
 
 .border-color {
     border-color: var(--x-border-color);

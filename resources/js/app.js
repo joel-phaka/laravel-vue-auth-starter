@@ -15,9 +15,11 @@ const app = createApp(App);
 const head = createHead()
 app.use(head);
 
-app.use(VueRecaptchaPlugin, {
-    v2SiteKey: import.meta.env.VITE_APP_RECAPTCHA_KEY
-});
+if (window.__xapp__.features.recaptcha) {
+    app.use(VueRecaptchaPlugin, {
+        v2SiteKey: import.meta.env.VITE_APP_RECAPTCHA_KEY
+    });
+}
 
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);

@@ -16,12 +16,12 @@ class FeaturesTableSeeder extends Seeder
         if (DB::table('features')->count() === 0) {
             Feature::setMany([
                 ['name' => 'social_login', 'enabled' => false],
-                ['name' => 'recaptcha', 'enabled' => true],
+                ['name' => 'recaptcha', 'enabled' => false],
                 ['name' => 'oauth', 'enabled' => false, 'hidden' => true],
                 ['name' => 'token_auth', 'enabled' => false, 'hidden' => true],
                 ['name' => 'user_registration', 'enabled' => true],
                 ['name' => 'password_reset', 'enabled' => true],
-                ['name' => 'email_verification', 'enabled' => true],
+                ['name' => 'email_verification', 'enabled' => false],
                 ['name' => 'phone_number_verification', 'enabled' => false],
                 ['name' => 'otp_verification', 'enabled' => false],
             ]);

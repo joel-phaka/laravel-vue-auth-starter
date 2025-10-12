@@ -2,11 +2,20 @@
 
 namespace App\Listeners;
 
+use App\Enums\AuthState;
 use App\Events\UserRegistered;
+use App\Models\User;
+use App\Support\Auth\AuthEventData;
+use App\Support\Feature;
+use App\Traits\CreatesUserLogin;
 use Illuminate\Support\Facades\Log;
 
 class HandleUserRegistered
 {
+    use CreatesUserLogin;
+
+    public AuthEventData $authEventData;
+
     /**
      * Create the event listener.
      */
@@ -20,10 +29,19 @@ class HandleUserRegistered
      */
     public function handle(UserRegistered $event): void
     {
-        $user = $event->getUser();
+        $isEmailVerificationEnabled = Feature::isEnabled('email_verification');
+        $this->authEventData = $event->getAuthEventData();
+        $user = $event->getAuthEventData()->getUser();
+        $authState = $isEmailVerificationEnabled
+            ? AuthState::PENDING_REGISTRATION_VERIFICATION
+            : AuthState::LOGGED_IN;
 
-        // Send email verification
-        $this->sendEmailVerification($user);
+        $this->createUserLogin($authState, $event->getAuthEventData());
+
+        if ($isEmailVerificationEnabled) {
+            // Send email verification
+            $this->sendEmailVerification($user);
+        }
 
         // Log the registration
         $this->logRegistration($user);
@@ -35,17 +53,9 @@ class HandleUserRegistered
     /**
      * Send email verification to the user
      */
-    private function sendEmailVerification($user): void
+    private function sendEmailVerification(User $user): void
     {
-        try {
-            $user->sendEmailVerificationNotification();
-        } catch (\Exception $e) {
-            Log::error('Failed to send email verification', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'error' => $e->getMessage()
-            ]);
-        }
+        $user->sendEmailVerificationNotification();
     }
 
     /**

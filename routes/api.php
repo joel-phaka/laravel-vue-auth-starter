@@ -52,12 +52,21 @@ Route::group([
             ->name('api.auth.password.reset');
     });
 
-    Route::middleware('auth.dynamic')
-        ->group(function () {
-            Route::get('user', [AuthController::class, 'user'])
-                ->name('api.auth.user');
-            Route::post('logout', [AuthController::class, 'logout'])
-                ->name('api.auth.logout');
+    Route::group([
+        'middleware' => ['auth.dynamic']
+    ], function () {
+        Route::post('logout', [AuthController::class, 'logout'])
+            ->name('api.auth.logout');
+
+        Route::group([
+            'middleware' => ['auth.user_status:active']
+        ], function () {
+            Route::group([
+                'middleware' => ['auth.state']
+            ], function () {
+                Route::get('user', [AuthController::class, 'user'])
+                    ->name('api.auth.user');
+            });
 
             Route::group([
                 'prefix' => 'verify',
@@ -73,6 +82,7 @@ Route::group([
                 });
             });
         });
+    });
 });
 
 Route::get('test', function () {

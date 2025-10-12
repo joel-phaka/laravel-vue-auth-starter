@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
 
     private function loadDynamicConfigs(): void
     {
-        if (!app()->runningInConsole()) return;
+        if (app()->runningInConsole()) return;
 
         $baseUrl = base_url();
 

@@ -19,6 +19,11 @@ Route::group([
 
 });
 
+// Health check
+Route::get('health', function () {
+    return response()->json(['status' => 'ok']);
+})->name('health');
+
 Route::get('{any}', [AppController::class, 'index'])
     ->where('any', '.*')
     ->name('app.index');

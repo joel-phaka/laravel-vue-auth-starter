@@ -173,7 +173,7 @@ const onSubmit = handleSubmit(async (values) => {
                 </div>
                 <p v-if="!!errors.acceptTerms" class="tw:mt-2 tw:text-red-500">{{errors.acceptTerms}}</p>
             </div>
-            <div v-if="appFeatures.recaptcha" class="tw:my-9 tw:flex tw:justify-center">
+            <div v-if="appFeatures.recaptcha" class="tw:mt-9 tw:flex tw:justify-center">
                 <div>
                     <RecaptchaCheckbox v-model="recaptchaToken" v-bind="recaptchaTokenAttrs"/>
                     <div v-if="!!errors.recaptchaToken" class="tw:mt-2 tw:text-red-500">
@@ -181,7 +181,7 @@ const onSubmit = handleSubmit(async (values) => {
                     </div>
                 </div>
             </div>
-            <Button type="submit" :disabled="!meta.valid" class="tw:block tw:w-full tw:text-center">Sign Up</Button>
+            <Button type="submit" :disabled="!meta.valid" class="tw:mt-9 tw:block tw:w-full tw:text-center">Sign Up</Button>
             <p class="tw:text-center tw:mt-8 tw:mb-0">
                 Already have an account? <router-link to="/signin" class="no-underline default-link">Sign In</router-link>
             </p>

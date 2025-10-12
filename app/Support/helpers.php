@@ -268,7 +268,7 @@ if (! function_exists('base_url')) {
             $url .= $path;
         }
 
-        return $url;
+        return strval($url);
     }
 }
 

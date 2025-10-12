@@ -11,8 +11,8 @@ use App\Http\Controllers\Controller;
 use App\Models\OAuthProvider;
 use App\Models\Role;
 use App\Models\User;
+use App\Support\Auth\AuthEventData;
 use App\Support\Feature;
-use App\Support\UserLoginInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
@@ -61,19 +61,21 @@ class SocialLoginController extends Controller
             $isNewUser = !!$user;
         }
 
-        if ($user?->status == UserStatus::ACTIVE) {
-            if ($isNewUser) event(new UserRegistered($user));
-
-            $user->oauthProviders()->syncWithoutDetaching([
-                $oauthProvider->id => ['oauth_provider_user_id' => $externalUser->getId()]
-            ]);
-        } else {
+        if ($user?->status != UserStatus::ACTIVE) {
             return response()->redirectTo('/signin');
         }
 
-        Auth::login($user);
+        $authEventData = new AuthEventData($user, AuthType::SESSION, session()->id(), $oauthProvider->id);
 
-        event(new UserLoggedIn(new UserLoginInfo($user, AuthType::SESSION, session()->getId())));
+        if ($isNewUser) {
+            event(new UserRegistered($authEventData));
+        } else {
+            event(new UserLoggedIn($authEventData));
+        }
+
+        $user->oauthProviders()->syncWithoutDetaching([
+            $oauthProvider->id => ['oauth_provider_user_id' => $externalUser->getId()]
+        ]);
 
         $returnUrl = strval(session()->pull('return_url'));
         $returnToPath = parse_url($returnUrl, PHP_URL_PATH) ?: '/';

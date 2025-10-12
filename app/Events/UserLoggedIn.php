@@ -2,8 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\User;
-use App\Support\UserLoginInfo;
+use App\Support\Auth\AuthEventData;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -11,21 +10,21 @@ class UserLoggedIn
 {
     use Dispatchable, SerializesModels;
 
-    private UserLoginInfo $userLoginInfo;
+    private AuthEventData $authEventData;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(UserLoginInfo $userLoginInfo)
+    public function __construct(AuthEventData $authEventData)
     {
-        $this->userLoginInfo = $userLoginInfo;
+        $this->authEventData = $authEventData;
     }
 
     /**
-     * @return UserLoginInfo
+     * @return AuthEventData
      */
-    public function getUserLoginInfo(): UserLoginInfo
+    public function getAuthEventData(): AuthEventData
     {
-        return $this->userLoginInfo;
+        return $this->authEventData;
     }
 }

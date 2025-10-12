@@ -18,7 +18,7 @@ class EmailVerificationController extends Controller
             return response()
                 ->json([
                     "message" => "Email already verified.",
-                    "error_code" => "email_verification_already_verified"
+                    "reason" => "email_verification_already_verified"
                 ])
                 ->badRequest();
         }
@@ -33,11 +33,11 @@ class EmailVerificationController extends Controller
             $error = match ($signedUrlState) {
                 SignedUrlState::EXPIRED_URL => [
                     'message' => 'Expired email verification url',
-                    'error_code' => 'email_verification_expired_url',
+                    'reason' => 'email_verification_expired_url',
                 ],
                 default => [
                     'message' => 'Invalid email verification url',
-                    'error_code' => 'email_verification_invalid_url',
+                    'reason' => 'email_verification_invalid_url',
                 ]
             };
 
@@ -50,7 +50,7 @@ class EmailVerificationController extends Controller
             return response()
                 ->json([
                     'message' => 'Email verification failed',
-                    'error_code' => 'email_verification_failed',
+                    'reason' => 'email_verification_failed',
                 ])
                 ->badRequest();
         }
@@ -66,7 +66,7 @@ class EmailVerificationController extends Controller
             return response()
                 ->json([
                     "message" => "Email already verified.",
-                    "error_code" => "email_verification_already_verified"
+                    "reason" => "email_verification_already_verified"
                 ])
                 ->badRequest();
         }

@@ -5,43 +5,31 @@ namespace App\Exceptions;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Support\Arrayable;
 
-class AccessTokenException extends AuthenticationException implements Arrayable
+class AccessTokenException extends LoginException
 {
     private array $data;
-    private string $reason;
 
     public function __construct(?array $data = null, ?string $reason = null)
     {
-        parent::__construct('Unauthorized');
-        $this->code = 401;
-        $this->data = $data ?? [];
+        parent::__construct();
 
+        $this->data = $data ?? [];
         $error = $this->data['error'] ?? null;
         $error_description = $this->data['error_description'] ?? null;
 
         if (!empty($error_description)) {
-            if (stripos($error_description, 'refresh token') !== false && stripos($error_description, 'invalid') !== false) {
-                $this->reason = 'auth_invalid_refresh_token';
-            } else if (stripos($error_description, 'credentials') !== false && stripos($error_description, 'invalid') !== false) {
-                $this->reason = 'auth_invalid_credentials';
+            if (str_contains($error_description, 'refresh token') && str_contains($error_description, 'invalid')) {
+                $this->setReason('invalid_refresh_token');
+            } else if (str_contains($error_description, 'credentials') && str_contains($error_description, 'invalid')) {
+                $this->setReason('invalid_credentials');
             }
-        } else if (!empty($error)) {
-            if (stripos($error, 'invalid_client') !== false) {
-                $this->reason = 'auth_invalid_credentials';
-            }
+        } else if (!empty($error) && str_contains($error, 'invalid')) {
+            $this->setReason('invalid_credentials');
         }
 
-        if (empty($this->reason)) {
-            $this->reason = $reason ?? 'auth_unauthorized' ;
+        if (!!$this->getReason()) {
+            $this->setReason($reason);
         }
-    }
-
-    /**
-     * @return string
-     */
-    public function getReason(): string
-    {
-        return $this->reason;
     }
 
     /**
@@ -50,13 +38,5 @@ class AccessTokenException extends AuthenticationException implements Arrayable
     public function getData(): array
     {
         return $this->data;
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'message' => $this->getMessage(),
-            'error_code' => $this->getReason(),
-        ];
     }
 }

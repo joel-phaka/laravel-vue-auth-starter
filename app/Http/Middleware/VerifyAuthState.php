@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Enums\AuthState;
-use App\Enums\UserStatus;
 use App\Exceptions\AuthStateException;
 use App\Exceptions\LoginException;
 use App\Support\Auth\AuthUtils;
@@ -12,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class DynamicAuth
+class VerifyAuthState
 {
     /**
      * Handle an incoming request.
@@ -22,21 +21,23 @@ class DynamicAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->is('api/*')) return $next($request);
-
-        // Use JWT if the Authorization header starts with 'Bearer'
-        $authHeader = strval($request->header('Authorization'));
-
-        if (str_starts_with($authHeader, 'Bearer ')) {
-            Auth::shouldUse('api');
-        } else {
-            Auth::shouldUse('sanctum');
-        }
-
         if (!Auth::check()) {
             throw new LoginException();
         }
 
-        return $next($request);
+        $currentLogin = AuthUtils::getCurrentLogin();
+
+        if ($currentLogin->auth_state == AuthState::LOGGED_IN) {
+            return $next($request);
+        }
+
+        if (in_array($currentLogin->auth_state, [
+            AuthState::PENDING_LOGIN_VERIFICATION,
+            AuthState::PENDING_REGISTRATION_VERIFICATION
+        ])) {
+            throw new AuthStateException($currentLogin->auth_state);
+        }
+
+        throw new LoginException();
     }
 }

@@ -34,7 +34,7 @@ const schema = createFieldsSchema({
             .notRequired(),
     },
     true
-)
+);
 
 const {meta, defineField, errors, handleSubmit} = useForm({
     validationSchema: toTypedSchema(schema),
@@ -65,7 +65,7 @@ const onSubmit = handleSubmit(async (values) => login(keysToSnakeCase(values)));
             <h2>Sign in to continue</h2>
             <p v-if="!meta.dirty">Enter your email and password to sign in.</p>
             <p v-else-if="!!loginError" class="tw:text-red-500">
-                <template v-if="loginError?.response?.data?.error_code === 'auth_invalid_credentials'">
+                <template v-if="loginError?.response?.data?.reason === 'auth_invalid_credentials'">
                     Incorrect email or password
                 </template>
                 <template v-else>

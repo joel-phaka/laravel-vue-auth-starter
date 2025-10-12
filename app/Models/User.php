@@ -10,6 +10,7 @@ use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
@@ -82,5 +83,10 @@ class User extends Authenticatable implements MustVerifyEmailContract
         return $this->belongsToMany(OAuthProvider::class, 'oauth_providers_users', 'user_id', 'oauth_provider_id')
             ->withPivot(['oauth_provider_user_id'])
             ->withTimestamps();
+    }
+
+    public function logins(): HasMany
+    {
+        return $this->hasMany(UserLogin::class);
     }
 }
