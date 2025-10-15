@@ -33,7 +33,7 @@ const openOAuthProviderSignInWindow = (url) => {
                 v-for="oauth_provider in appSettings.oauth_providers"
                 :class="[
                     'tw:block tw:w-full',
-                    'tw:justify-start!',
+                    'tw:justify-center!',
                     'tw:text-black!',
                     'tw:light:bg-[white]!',
                     'tw:dark:text-white!',
@@ -44,7 +44,7 @@ const openOAuthProviderSignInWindow = (url) => {
                 ]"
                 variant="outlined"
                 @click="() => openOAuthProviderSignInWindow(oauth_provider.url)">
-                <div class="tw:flex tw:items-center">
+                <div class="tw:flex tw:items-center tw:justify-center">
                     <SocialIcon :provider="oauth_provider.code" :size="26"/>
                     <span class="tw:ml-2">{{ prefixText }} {{ oauth_provider.name }}</span>
                 </div>

@@ -9,4 +9,8 @@ enum AuthState: string
     case LOGGED_IN = 'logged_in';
     case LOGGED_OUT = 'logged_out';
     case BLOCKED = 'blocked';
+
+    public function code(): string {
+        return 'auth_' . strtolower($this->value);
+    }
 }

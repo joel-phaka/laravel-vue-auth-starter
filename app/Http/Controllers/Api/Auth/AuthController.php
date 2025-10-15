@@ -35,7 +35,10 @@ class AuthController extends Controller
 
         $this->triggerUserLoggedInEvent(Auth::user(), AuthType::SESSION, session()->id());;
 
-        return response()->json(Auth::user());
+        return response()->json([
+            'auth_state' => AuthUtils::getCurrentLogin()->auth_state->code(),
+            'user' => Auth::user()
+        ]);
     }
 
     public function user(): JsonResponse
@@ -161,7 +164,17 @@ class AuthController extends Controller
         Auth::login($user);
         $this->triggerUserLoggedInEvent($user, AuthType::ACCESS_TOKEN, $accessTokenId);
 
-        return response()->json(Arr::except($tokens, ['user']));
+        $userLogin = Auth::user()
+            ->logins()
+            ->firstWhere([
+                'auth_type' => AuthType::ACCESS_TOKEN,
+                'auth_type_id' => $accessTokenId
+            ]);
+
+        return response()->json([
+            'auth_state' => $userLogin->auth_state->code(),
+            ...Arr::except($tokens, ['user'])
+        ]);
     }
 
     /**

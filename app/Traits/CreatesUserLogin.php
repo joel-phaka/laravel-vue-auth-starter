@@ -3,8 +3,6 @@
 namespace App\Traits;
 
 use App\Enums\AuthState;
-use App\Enums\AuthType;
-use App\Models\User;
 use App\Models\UserLogin;
 use App\Support\Auth\AuthEventData;
 use Illuminate\Support\Carbon;

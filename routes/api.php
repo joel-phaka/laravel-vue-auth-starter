@@ -59,7 +59,7 @@ Route::group([
             ->name('api.auth.logout');
 
         Route::group([
-            'middleware' => ['auth.user_status:active']
+            'middleware' => ['auth.active']
         ], function () {
             Route::group([
                 'middleware' => ['auth.state']
