@@ -11,8 +11,8 @@ class UserLogin extends Model
 {
     protected $fillable = [
         'user_id',
-        'auth_type',
         'auth_state',
+        'auth_type',
         'auth_type_id',
         'oauth_provider_id',
         'ip',
@@ -30,8 +30,8 @@ class UserLogin extends Model
     public $timestamps = false;
 
     protected $casts = [
-        'auth_type' => AuthType::class,
-        'auth_state' => AuthState::class
+        'auth_state' => AuthState::class,
+        'auth_type' => AuthType::class
     ];
 
     public function user(): BelongsTo

@@ -26,6 +26,7 @@ class HandleUserLoggedIn
 
     /**
      * Handle the event.
+     * @throws \Throwable
      */
     public function handle(UserLoggedIn $event): void
     {

@@ -12,7 +12,6 @@ use App\Models\OAuthProvider;
 use App\Models\Role;
 use App\Models\User;
 use App\Support\Auth\AuthEventData;
-use App\Support\Auth\AuthUtils;
 use App\Support\Feature;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -67,7 +66,7 @@ class SocialLoginController extends Controller
         }
 
         Auth::login($user);
-        
+
         $authEventData = new AuthEventData($user, AuthType::SESSION, session()->id(), $oauthProvider->id);
 
         if ($isNewUser) {

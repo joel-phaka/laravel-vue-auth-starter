@@ -2,10 +2,8 @@
 import {useForm} from "vee-validate";
 import {toTypedSchema} from "@vee-validate/yup";
 import * as yup from "yup";
-import browserStorage from "@/lib/browser-storage.js";
 import {computed, inject, watch} from "vue";
 import {Checkbox as RecaptchaCheckbox} from "vue-recaptcha";
-import config from "@/config";
 import {keysToSnakeCase, createFieldsSchema} from "@/lib/utils.js";
 import {useRoute} from "vue-router";
 import appLogo from "@/assets/app-logo.png";
@@ -36,10 +34,10 @@ const schema = createFieldsSchema({
     true
 );
 
-const {meta, defineField, errors, handleSubmit} = useForm({
+const {meta, errors, defineField, setErrors, handleSubmit} = useForm({
     validationSchema: toTypedSchema(schema),
     initialValues: {
-        email: (browserStorage.remove('loginEmail') ?? route.query.email ?? ''),
+        email: '',
         password: '',
         rememberMe: true,
     }
@@ -54,8 +52,11 @@ const {isLoggingIn, authErrors, login} = useAuth();
 const loginError = computed(() => authErrors.value?.loginError);
 
 watch(isLoggingIn, setProcessing, {immediate: true});
+watch(loginError,  (newValue) => {
+    if (newValue?.hasValidationErrors) setErrors(newValue.validationErrors);
+});
 
-const onSubmit = handleSubmit(async (values) => login(keysToSnakeCase(values)));
+const onSubmit = handleSubmit(async (values) => await login(keysToSnakeCase(values)));
 </script>
 
 <template>

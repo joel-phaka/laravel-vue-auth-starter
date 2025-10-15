@@ -27,6 +27,7 @@ class HandleUserRegistered
 
     /**
      * Handle the event.
+     * @throws \Throwable
      */
     public function handle(UserRegistered $event): void
     {

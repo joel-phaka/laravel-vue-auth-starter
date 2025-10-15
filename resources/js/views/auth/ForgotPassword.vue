@@ -25,7 +25,7 @@ const schema = createFieldsSchema({
     true
 );
 
-const { meta, defineField, errors, handleSubmit } = useForm({
+const { meta, errors, defineField, setErrors, handleSubmit } = useForm({
     validationSchema: toTypedSchema(schema),
 });
 
@@ -45,6 +45,8 @@ const onSubmit = handleSubmit(async (values) => {
         isEmailSent.value = true;
     } catch (error) {
         forgotPasswordError.value = error;
+
+        if (error.hasValidationErrors) setErrors(error.validationErrors);
     } finally {
         setProcessing(false);
     }
@@ -62,12 +64,6 @@ const onSubmit = handleSubmit(async (values) => {
             </p>
         </div>
         <div>
-            <Message
-                v-if="forgotPasswordError?.response?.hasValidationErrors && forgotPasswordError?.response?.data?.errors?.email[0]"
-                severity="error"
-                class="tw:mb-8">
-                {{ forgotPasswordError?.response?.data?.errors?.email[0] }}
-            </Message>
             <div>
                 <div class="tw:mb-5">
                     <InputText

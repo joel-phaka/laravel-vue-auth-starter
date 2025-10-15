@@ -2,7 +2,6 @@
 import {useForm} from "vee-validate";
 import { toTypedSchema } from "@vee-validate/yup";
 import * as yup from "yup";
-import browserStorage from "@/lib/browser-storage.js";
 import {inject, ref} from "vue";
 import {Checkbox as RecaptchaCheckbox} from "vue-recaptcha";
 import {keysToSnakeCase, createFieldsSchema} from "@/lib/utils.js";
@@ -49,7 +48,7 @@ const schema = createFieldsSchema({
     true,
 );
 
-const { meta, defineField, errors, handleSubmit } = useForm({
+const { meta, errors, defineField, setErrors, handleSubmit } = useForm({
     validationSchema: toTypedSchema(schema),
 });
 
@@ -72,14 +71,11 @@ const onSubmit = handleSubmit(async (values) => {
 
         await authService.register(userData);
 
-        browserStorage.set('loginEmail', email.value);
-
-        await router.replace({
-            path: '/signin',
-        });
+        await router.replace('/');
     } catch (error) {
         registrationError.value = error;
-        browserStorage.remove('loginEmail');
+
+        if (error.hasValidationErrors) setErrors(error.validationErrors);
     } finally {
         setProcessing(false);
     }
@@ -121,7 +117,7 @@ const onSubmit = handleSubmit(async (values) => {
                     class="tw:block tw:w-full"/>
                 <p v-if="!!errors.lastName" class="tw:mt-2 tw:text-red-500">{{errors.lastName}}</p>
             </div>
-            <div class="mb-3">
+            <div class="tw:mb-3">
                 <label for="email" class="block pb-1">Email</label>
                 <InputText
                     v-model="email"

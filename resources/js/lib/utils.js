@@ -78,16 +78,12 @@ export function normaliseError(error) {
 
     let err = _.cloneDeep(error);
 
-    err.response = err.response || {
-        status: 500,
-        data: {
-            message: err.message || "Internal Server Error",
-        }
-    };
+    err.hasValidationErrors = err.response?.status === 422
+                          && _.isObject(err.response?.data?.errors)
+                          && Object.keys(err.response.data.errors).length > 0;
 
-    err.response.hasValidationErrors = err.response?.status === 422;
-    err.response.data.errors = _.isObject(err.response.data.errors)
-        ? err.response.data.errors
+    err.validationErrors = err.hasValidationErrors
+        ? Object.fromEntries(Object.entries(err.response.data.errors).map(([key, value]) => [key, value[0]]))
         : {};
 
     err.isNormalised = true;

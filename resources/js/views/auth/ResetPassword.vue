@@ -37,7 +37,7 @@ const schema = createFieldsSchema({
     true
 );
 
-const { meta, defineField, errors, handleSubmit } = useForm({
+const { meta, errors, defineField, setErrors, handleSubmit } = useForm({
     validationSchema: toTypedSchema(schema),
 });
 
@@ -64,6 +64,8 @@ const onSubmit = handleSubmit(async (values) => {
         isPasswordReset.value = true;
     } catch (error) {
         resetPasswordError.value = error;
+
+        if (error.hasValidationErrors) setErrors(error.validationErrors);
     } finally {
         setProcessing(false);
     }
@@ -78,12 +80,6 @@ const onSubmit = handleSubmit(async (values) => {
             <p>Enter your new password below to regain access to your account.</p>
         </div>
         <div>
-            <Message
-                v-if="resetPasswordError?.response?.hasValidationErrors && resetPasswordError?.response?.data?.errors?.email[0]"
-                severity="error"
-                class="tw:mb-8">
-                {{ resetPasswordError?.response?.data?.errors?.email[0] }}
-            </Message>
             <div>
                 <div class="tw:mb-3">
                     <label for="password" class="tw:block tw:pb-1">New Password</label>

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Enums\AuthType;
-use App\Enums\UserStatus;
 use App\Events\UserLoggedIn;
 use App\Events\UserLoggedOut;
 use App\Exceptions\AccessTokenException;

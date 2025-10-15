@@ -13,7 +13,10 @@ use Stevebauman\Location\Facades\Location;
 
 trait CreatesUserLogin
 {
-    protected function createUserLogin(AuthState $authState, AuthEventData $authEventData): void
+    /**
+     * @throws \Throwable
+     */
+    protected function createUserLogin(AuthState $authState, AuthEventData $authEventData): bool
     {
         $userLogin = new UserLogin;
         $userLogin->user_id = $authEventData->getUser()->id;
@@ -47,6 +50,6 @@ trait CreatesUserLogin
         else if (stripos($userLogin->user_agent, 'kaios') !== false) $userLogin->device_platform = 'kaios';
         else if ($agent->isDesktop()) $userLogin->device_platform = 'web';
 
-        $userLogin->save();
+        return $userLogin->saveOrFail();
     }
 }
