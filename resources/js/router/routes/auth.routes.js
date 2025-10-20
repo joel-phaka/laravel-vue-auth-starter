@@ -31,14 +31,25 @@ const authRoutes = [
         },
     }),
     ...arrayOnlyIf(appFeatures.email_verification, {
-        path: '/verify',
-        component: () => import('@/views/auth/Verify.vue'),
-        name: 'verify',
+        path: '/verify/email',
+        component: () => import('@/views/auth/VerifyEmail.vue'),
+        name: 'verify-email',
         meta: {
             requireAuth: true,
             guestOnly: false,
             title: 'Verify Email',
             layout: layoutNames.EmptyLayout,
+        },
+    }),
+    ...arrayOnlyIf(1, {
+        path: '/verify/otp',
+        component: () => import('@/views/auth/VerifyOtp.vue'),
+        name: 'verify-otp',
+        meta: {
+            requireAuth: true,
+            guestOnly: false,
+            title: 'Verify OTP',
+            layout: layoutNames.AuthLayout,
         },
     }),
     ...arrayOnlyIf(appFeatures.password_reset, {

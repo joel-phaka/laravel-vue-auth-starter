@@ -40,7 +40,7 @@ watch(() => route.meta.title, setPageTitle, { immediate: true });
     <component
         v-if="!isLoggingOut"
         :is="layout"
-        :key="$route.meta.layout">
+        :key="$route.path">
         <router-view :key="$route.fullPath"/>
     </component>
     <div

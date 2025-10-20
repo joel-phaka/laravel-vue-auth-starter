@@ -2,6 +2,7 @@
 
 use App\Exceptions\LoginException;
 use App\Http\Middleware\DynamicAuth;
+use App\Http\Middleware\VerifyActiveUser;
 use App\Http\Middleware\VerifyAuthState;
 use App\Http\Middleware\VerifyFeature;
 use App\Http\Middleware\VerifyRecaptcha;
@@ -32,9 +33,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'auth.dynamic' => DynamicAuth::class,
+            'auth.role' => VerifyUserRole::class,
             'auth.state' => VerifyAuthState::class,
             'auth.user_status' => VerifyUserStatus::class,
-            'auth.role' => VerifyUserRole::class,
+            'auth.active' => VerifyActiveUser::class,
             'feature' => VerifyFeature::class,
             'recaptcha' => VerifyRecaptcha::class,
         ]);

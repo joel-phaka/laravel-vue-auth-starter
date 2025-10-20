@@ -12,7 +12,7 @@ use Illuminate\Support\Uri;
 
 class EmailVerificationController extends Controller
 {
-    public function verifyEmail(Request $request): JsonResponse
+    public function verify(Request $request): JsonResponse
     {
         if (Auth::user()->hasVerifiedEmail()) {
             return response()
@@ -60,7 +60,7 @@ class EmailVerificationController extends Controller
         return response()->json(['message' => 'Email verified.']);
     }
 
-    public function resendEmail(Request $request): JsonResponse
+    public function resend(Request $request): JsonResponse
     {
         if (Auth::user()->hasVerifiedEmail()) {
             return response()

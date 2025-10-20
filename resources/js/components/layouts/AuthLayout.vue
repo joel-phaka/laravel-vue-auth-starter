@@ -38,7 +38,7 @@ provide('app:layout:auth:setProcessing', (v) => {
     .form-container {
         background-color: var(--x-container-bg-color);
     }
-    .form-container:has(> .signin-form) {
+    .form-container:has(> .signin-form, .verification-form) {
         width: 450px;
     }
     .form-container:has(> :is(.signup-form, .forgot-password-form, .password-reset-form)) {

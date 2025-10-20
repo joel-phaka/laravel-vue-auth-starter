@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\ForgotPasswordController;
+use App\Http\Controllers\Api\Auth\OtpVerificationController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
@@ -70,14 +71,25 @@ Route::group([
 
             Route::group([
                 'prefix' => 'verify',
-                'middleware' => ['feature:email_verification', 'throttle:6,1']
+                'middleware' => ['throttle:1,1']
             ], function () {
                 Route::group([
-                    'prefix' => 'email',
+                    'prefix' => 'otp',
+                    'middleware' => ['feature:otp_verification']
                 ], function () {
-                    Route::post('/', [EmailVerificationController::class, 'verifyEmail'])
+                    Route::post('/', [OtpVerificationController::class, 'verify'])
+                        ->name('api.auth.verify.otp');
+                    Route::post('resend', [OtpVerificationController::class, 'resend'])
+                        ->name('api.auth.verify.otp.resend');
+                });
+
+                Route::group([
+                    'prefix' => 'email',
+                    'middleware' => ['feature:email_verification']
+                ], function () {
+                    Route::post('/', [EmailVerificationController::class, 'verify'])
                         ->name('api.auth.verify.email');
-                    Route::post('resend', [EmailVerificationController::class, 'resendEmail'])
+                    Route::post('resend', [EmailVerificationController::class, 'resend'])
                         ->name('api.auth.verify.email.resend');
                 });
             });

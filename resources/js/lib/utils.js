@@ -110,3 +110,19 @@ export function arrayOnlyIf(condition, arr) {
 
     return [];
 }
+
+export function toLocalUri(url) {
+    const decodedUri = decodeURIComponent(url);
+    const isPath = PATH_REGEX.test(decodedUri);
+    const isInternalUrl = PATH_REGEX.test(decodedUri.substring(appUrl().length));
+
+    if (isPath || isInternalUrl) {
+        const uri = "/" + (isInternalUrl ? decodedUri.substring(appUrl().length) : decodedUri)
+            .replace(/^\/+/, '')
+            .replace(/\/+$/, '');
+
+        return uri;
+    }
+
+    return '';
+}

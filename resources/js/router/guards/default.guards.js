@@ -2,7 +2,7 @@ import * as yup from "yup";
 import _ from "lodash";
 
 const defaultGuards = {
-    ['verify']: {
+    ['verify-email']: {
         beforeEnter: async (to, from, next) => {
             try {
                 await axios.post('http://127.0.0.1:8000/api/auth/verify/email', {

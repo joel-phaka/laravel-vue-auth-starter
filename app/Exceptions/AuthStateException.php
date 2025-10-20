@@ -20,12 +20,4 @@ class AuthStateException extends LoginException
     {
         return $this->authState;
     }
-
-    public function toArray(): array
-    {
-        return [
-            ...parent::toArray(),
-            'user' => Auth::user()
-        ];
-    }
 }
