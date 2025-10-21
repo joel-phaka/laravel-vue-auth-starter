@@ -4,17 +4,19 @@ import vue from '@vitejs/plugin-vue';
 import Components from 'unplugin-vue-components/vite';
 import {PrimeVueResolver} from '@primevue/auto-import-resolver';
 import {fileURLToPath, URL} from 'node:url'
+import tailwindcss from '@tailwindcss/vite'
+import vueJsxPlugin from "@vitejs/plugin-vue-jsx";
 
 export default defineConfig({
     plugins: [
         laravel({
             input: [
-                'resources/sass/app.scss',
-                //'resources/css/app.css',
+                'resources/css/app.css',
                 'resources/js/app.js',
             ],
             refresh: true,
         }),
+        tailwindcss(),
         vue({
             template: {
                 transformAssetUrls: {
@@ -23,11 +25,12 @@ export default defineConfig({
                 },
             },
         }),
+        vueJsxPlugin(),
         Components({
             resolvers: [
                 PrimeVueResolver()
             ]
-        })
+        }),
     ],
     resolve: {
         alias: {

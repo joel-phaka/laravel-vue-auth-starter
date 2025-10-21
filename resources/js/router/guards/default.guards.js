@@ -2,7 +2,7 @@ import * as yup from "yup";
 import _ from "lodash";
 
 const defaultGuards = {
-    ['verify']: {
+    ['verify-email']: {
         beforeEnter: async (to, from, next) => {
             try {
                 await axios.post('http://127.0.0.1:8000/api/auth/verify/email', {
@@ -12,12 +12,12 @@ const defaultGuards = {
                 to.meta.emailVerificationStatus = 'verified';
                 next();
             } catch (error) {
-                const errorCode = error.response?.data?.error_code;
+                const reason = error.response?.data?.reason;
 
-                if (errorCode === 'email_verification_already_verified') {
+                if (reason === 'email_verification_already_verified') {
                     next('/');
                 } else {
-                    to.meta.emailVerificationStatus = errorCode === 'email_verification_expired_url'
+                    to.meta.emailVerificationStatus = reason === 'email_verification_expired_url'
                         ? 'expired'
                         : 'failed';
 

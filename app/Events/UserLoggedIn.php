@@ -2,13 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\User;
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Support\Auth\AuthEventData;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -16,21 +10,21 @@ class UserLoggedIn
 {
     use Dispatchable, SerializesModels;
 
-    private User $user;
+    private AuthEventData $authEventData;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user)
+    public function __construct(AuthEventData $authEventData)
     {
-        $this->user = $user;
+        $this->authEventData = $authEventData;
     }
 
     /**
-     * @return User
+     * @return AuthEventData
      */
-    public function getUser(): User
+    public function getAuthEventData(): AuthEventData
     {
-        return $this->user;
+        return $this->authEventData;
     }
 }

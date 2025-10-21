@@ -6,21 +6,10 @@ import {
 } from "@/config/urls.js";
 import _ from "lodash";
 
-const mapUser = (user) => {
-    if (!_.isPlainObject(user)) return user;
-
-    user.role.isAdmin = () => user.role.name === 'super_admin';
-    user.role.isSuperAdmin = () => user.role.name === 'admin';
-    user.role.isUser = () => user.role.name === 'user';
-    user.role.is = (roleName) => user.role.name === roleName;
-
-    return user;
-};
-
 export async function login(credentials) {
     const response = await axios.post(URL_API_AUTH_LOGIN, credentials);
 
-    return mapUser(response.data);
+    return response.data;
 }
 
 export async function logout() {
@@ -32,7 +21,7 @@ export async function logout() {
 export async function fetchAuthUser() {
     const response = await axios.get(URL_API_AUTH_USER);
 
-    return mapUser(response.data);
+    return response.data;
 }
 
 export async function register(data) {

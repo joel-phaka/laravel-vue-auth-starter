@@ -5,24 +5,27 @@ import * as yup from "yup";
 import {inject, ref} from "vue";
 import {Checkbox as RecaptchaCheckbox} from "vue-recaptcha";
 import * as authService from "@/services/auth.service.js";
+import {createFieldsSchema} from "@/lib/utils.js";
 import {useRouter} from "vue-router";
+import {useAppStore} from "@/stores/app.store.js"
+
+const {appFeatures} = useAppStore();
 
 const router = useRouter();
 
 const setProcessing = inject('app:layout:auth:setProcessing');
 
-const schema = yup.object({
-    email: yup
-        .string()
-        .label("Email")
-        .required()
-        .email(),
-    recaptchaToken: yup
-        .string()
-        .required("Please complete the reCAPTCHA check.")
-});
+const schema = createFieldsSchema({
+        email: yup
+            .string()
+            .label("Email")
+            .required()
+            .email(),
+    },
+    true
+);
 
-const { meta, defineField, errors, handleSubmit } = useForm({
+const { meta, errors, defineField, setErrors, handleSubmit } = useForm({
     validationSchema: toTypedSchema(schema),
 });
 
@@ -42,6 +45,8 @@ const onSubmit = handleSubmit(async (values) => {
         isEmailSent.value = true;
     } catch (error) {
         forgotPasswordError.value = error;
+
+        if (error.hasValidationErrors) setErrors(error.validationErrors);
     } finally {
         setProcessing(false);
     }
@@ -50,7 +55,7 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
     <form @submit="onSubmit" class="forgot-password-form">
-        <div class="mb-5">
+        <div class="tw:mb-8">
             <!--<img :src="siteLogo" alt="form-site-logo" class="form-site-logo">-->
             <h2>Forgot Your Password?</h2>
             <p>
@@ -59,14 +64,8 @@ const onSubmit = handleSubmit(async (values) => {
             </p>
         </div>
         <div>
-            <Message
-                v-if="forgotPasswordError?.response?.hasValidationErrors && forgotPasswordError?.response?.data?.errors?.email[0]"
-                severity="error"
-                class="mb-5">
-                {{ forgotPasswordError?.response?.data?.errors?.email[0] }}
-            </Message>
             <div>
-                <div class="mb-3">
+                <div class="tw:mb-5">
                     <InputText
                         v-model="email"
                         v-bind="emailAttrs"
@@ -74,15 +73,15 @@ const onSubmit = handleSubmit(async (values) => {
                         :disabled="isEmailSent"
                         id="email"
                         placeholder="Email"
-                        class="block w-full"/>
-                    <p v-if="!!errors.email" class="mt-2 text-red-500">{{errors.email}}</p>
+                        class="tw:block tw:w-full"/>
+                    <p v-if="!!errors.email" class="tw:mt-2 tw:text-red-500">{{errors.email}}</p>
                 </div>
             </div>
             <div v-if="!isEmailSent">
-                <div class="mb-3 flex justify-content-center">
+                <div v-if="appFeatures.recaptcha" class="tw:flex tw:justify-center">
                     <div>
                         <RecaptchaCheckbox v-model="recaptchaToken" v-bind="recaptchaTokenAttrs"/>
-                        <div v-if="!!errors.recaptchaToken" class="mt-2 text-red-500">
+                        <div v-if="!!errors.recaptchaToken" class="tw:mt-2 tw:text-red-500">
                             {{ errors.recaptchaToken }}
                         </div>
                     </div>
@@ -91,11 +90,11 @@ const onSubmit = handleSubmit(async (values) => {
                     v-if="!isEmailSent"
                     type="submit"
                     :disabled="!meta.valid"
-                    class="block w-full mt-5 text-center">
+                    class="tw:block tw:w-full tw:my-8 tw:text-center">
                     Submit
                 </Button>
-                <p class="text-center mt-5 mb-0">
-                    Do you remember your password? <router-link to="/signin" class="no-underline">Sign In</router-link>
+                <p class="tw:text-center tw:mb-0">
+                    Do you remember your password? <router-link to="/signin" class="no-underline default-link">Sign In</router-link>
                 </p>
             </div>
         </div>

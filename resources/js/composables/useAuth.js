@@ -1,6 +1,6 @@
 import {useRoute, useRouter} from 'vue-router';
 import {useAuthStore} from '@/stores/auth.store';
-import {appUrl, PATH_REGEX} from "@/lib/utils.js";
+import {toLocalUri} from "@/lib/utils.js";
 import {storeToRefs} from "pinia";
 
 export default function useAuth() {
@@ -8,8 +8,10 @@ export default function useAuth() {
     const route = useRoute();
 
     const authStore = useAuthStore();
+    const {fetchAuthUser} = authStore;
     const {
         authUser,
+        authState,
         isLoggedIn,
         isLoggingIn,
         isLoggingOut,
@@ -19,23 +21,20 @@ export default function useAuth() {
 
     const login = async (credentials) => {
         return await authStore.loginUser(credentials, async () => {
-            let continueToPath = '/';
+            let returnTo = '/';
 
             if (route.query.return_url) {
-                const decodedUri = decodeURIComponent(route.query.return_url);
-                const isPath = PATH_REGEX.test(decodedUri);
-                const isInternalUrl = PATH_REGEX.test(decodedUri.substring(appUrl().length));
+                const localUri = toLocalUri(route.query.return_url);
 
-                if (isPath || isInternalUrl) {
-                    const uri = "/" + (isInternalUrl ? decodedUri.substring(appUrl().length) : decodedUri)
-                        .replace(/^\/+/, '')
-                        .replace(/\/+$/, '')
-
-                    if (!/^\/signin|signup/.test(uri)) continueToPath = uri;
-                }
+                if (!/^\/signin|signup/.test(localUri)) returnTo = localUri;
             }
 
-            await router.push(continueToPath);
+            if (authState.value === 'auth_pending_login_verification') {
+                const query = !returnTo.startsWith('/verify/otp') ? {return_url: returnTo} : {};
+                returnTo = {name: 'verify-otp', query};
+            }
+
+            await router.replace(returnTo);
         });
     };
 
@@ -45,6 +44,7 @@ export default function useAuth() {
 
     return {
         authUser,
+        authState,
         isLoggedIn,
         isLoggingIn,
         isLoggingOut,
@@ -52,6 +52,6 @@ export default function useAuth() {
         isFetchingAuthUser,
         login,
         logout,
-        fetchAuthUser: authStore.fetchAuthUser,
+        fetchAuthUser,
     }
 }

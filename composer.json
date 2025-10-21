@@ -18,17 +18,20 @@
     ],
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^12.21",
-        "laravel/sanctum": "^4.2",
-        "laravel/passport": "^12.4",
-        "laravel/socialite": "^5.23",
         "jenssegers/agent": "^2.6",
-        "stevebauman/location": "^7.5",
+        "laravel/framework": "^12.33",
+        "laravel/passport": "^12.4",
+        "laravel/sanctum": "^4.2",
+        "laravel/socialite": "^5.23",
+        "laravel/tinker": "^2.10.1",
+        "laravel/ui": "^4.6",
         "peterpetrus/passport-token": "^0.1.0",
-        "laravel/tinker": "^2.10.1"
+        "predis/predis": "^3.2",
+        "stevebauman/location": "^7.6"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24",
+        "fly-apps/dockerfile-laravel": "*",
         "laravel/pail": "^1.2.3",
         "laravel/pint": "^1.24",
         "laravel/sail": "^1.44",

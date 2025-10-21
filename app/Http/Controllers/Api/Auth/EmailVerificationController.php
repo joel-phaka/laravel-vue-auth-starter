@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Enums\SignedUrlState;
-use App\Support\Utils;
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
@@ -13,19 +12,19 @@ use Illuminate\Support\Uri;
 
 class EmailVerificationController extends Controller
 {
-    public function verifyEmail(Request $request): JsonResponse
+    public function verify(Request $request): JsonResponse
     {
         if (Auth::user()->hasVerifiedEmail()) {
             return response()
                 ->json([
                     "message" => "Email already verified.",
-                    "error_code" => "email_verification_already_verified"
+                    "reason" => "email_verification_already_verified"
                 ])
                 ->badRequest();
         }
 
         $uri = Uri::of($request->string('url'));
-        $signedUrlState = Utils::verifySignedUrl($uri, true);
+        $signedUrlState = verify_signed_url($uri, true);
 
         if ($signedUrlState !== SignedUrlState::VALID_URL ||
             !hash_equals(strval($uri->query()->get('id')), strval(Auth::user()->getKey())) ||
@@ -34,11 +33,11 @@ class EmailVerificationController extends Controller
             $error = match ($signedUrlState) {
                 SignedUrlState::EXPIRED_URL => [
                     'message' => 'Expired email verification url',
-                    'error_code' => 'email_verification_expired_url',
+                    'reason' => 'email_verification_expired_url',
                 ],
                 default => [
                     'message' => 'Invalid email verification url',
-                    'error_code' => 'email_verification_invalid_url',
+                    'reason' => 'email_verification_invalid_url',
                 ]
             };
 
@@ -51,7 +50,7 @@ class EmailVerificationController extends Controller
             return response()
                 ->json([
                     'message' => 'Email verification failed',
-                    'error_code' => 'email_verification_failed',
+                    'reason' => 'email_verification_failed',
                 ])
                 ->badRequest();
         }
@@ -61,13 +60,13 @@ class EmailVerificationController extends Controller
         return response()->json(['message' => 'Email verified.']);
     }
 
-    public function resendEmail(Request $request): JsonResponse
+    public function resend(Request $request): JsonResponse
     {
         if (Auth::user()->hasVerifiedEmail()) {
             return response()
                 ->json([
                     "message" => "Email already verified.",
-                    "error_code" => "email_verification_already_verified"
+                    "reason" => "email_verification_already_verified"
                 ])
                 ->badRequest();
         }

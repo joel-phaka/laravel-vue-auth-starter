@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\Feature;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -16,6 +17,8 @@ class VerifyRecaptcha
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (Feature::isDisabled('recaptcha')) return $next($request);
+
         $recaptchaToken = $request->input('recaptcha_token');
 
         if (!!session()->token() && !$recaptchaToken) {

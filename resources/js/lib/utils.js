@@ -1,5 +1,7 @@
 import * as changeCase from "change-case";
-import _ from "lodash";
+import _, {isFunction, isPlainObject} from "lodash";
+import * as yup from "yup";
+import {useAppStore} from "@/stores/app.store.js";
 
 export const PATH_REGEX = /^\/(([^\/]+\/?)*|[^\/]+)(\?#.*)*$/;
 
@@ -76,19 +78,51 @@ export function normaliseError(error) {
 
     let err = _.cloneDeep(error);
 
-    err.response = err.response || {
-        status: 500,
-        data: {
-            message: err.message || "Internal Server Error",
-        }
-    };
+    err.hasValidationErrors = err.response?.status === 422
+                          && _.isObject(err.response?.data?.errors)
+                          && Object.keys(err.response.data.errors).length > 0;
 
-    err.response.hasValidationErrors = err.response?.status === 422;
-    err.response.data.errors = _.isObject(err.response.data.errors)
-        ? err.response.data.errors
+    err.validationErrors = err.hasValidationErrors
+        ? Object.fromEntries(Object.entries(err.response.data.errors).map(([key, value]) => [key, value[0]]))
         : {};
 
     err.isNormalised = true;
 
     return err;
+}
+
+export function createFieldsSchema(fields, useRecaptcha = false) {
+    const {appFeatures} = useAppStore();
+
+    if (useRecaptcha && appFeatures.recaptcha) {
+        fields.recaptchaToken = yup
+            .string()
+            .required("Please complete the reCAPTCHA check.")
+    }
+
+    return yup.object(fields);
+}
+
+export function arrayOnlyIf(condition, arr) {
+    if (condition && !!arr) {
+        return Array.isArray(arr) ? arr : [arr];
+    }
+
+    return [];
+}
+
+export function toLocalUri(url) {
+    const decodedUri = decodeURIComponent(url);
+    const isPath = PATH_REGEX.test(decodedUri);
+    const isInternalUrl = PATH_REGEX.test(decodedUri.substring(appUrl().length));
+
+    if (isPath || isInternalUrl) {
+        const uri = "/" + (isInternalUrl ? decodedUri.substring(appUrl().length) : decodedUri)
+            .replace(/^\/+/, '')
+            .replace(/\/+$/, '');
+
+        return uri;
+    }
+
+    return '';
 }

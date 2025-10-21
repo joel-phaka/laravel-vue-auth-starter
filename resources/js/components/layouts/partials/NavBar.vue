@@ -33,7 +33,7 @@ const menuPtOptions = {
         }
     },
     itemLink: {
-        class: ['py-3'],
+        class: ['tw:py-4!'],
         'aria-hidden': 'false'
     }
 };
@@ -52,12 +52,10 @@ const items = ref([
             {
                 label: 'Core',
                 icon: 'pi pi-bolt',
-                shortcut: '⌘+S'
             },
             {
                 label: 'Blocks',
                 icon: 'pi pi-server',
-                shortcut: '⌘+B'
             },
             {
                 separator: true
@@ -65,7 +63,6 @@ const items = ref([
             {
                 label: 'UI Kit',
                 icon: 'pi pi-pencil',
-                shortcut: '⌘+U'
             }
         ]
     },
@@ -108,16 +105,18 @@ const guestMenuItems = ref([
     }
 ]);
 
+const isSearchButtonVisible = ref(true);
+
 </script>
 
 <template>
     <Menubar
         :model="items"
-        class="evenly-spaced"
+        :class="{'evenly-spaced': isSearchButtonVisible}"
         :pt:root:class="['app--navbar']"
         :pt:button:style="{order: -1, width: '40px', height: '40px'}">
         <template #start>
-            <RouterLink to="/" class="flex align-items-center justify-content-center">
+            <RouterLink to="/" class="tw:flex tw:items-center tw:justify-center">
                 <img :src="appLogo" alt="App Logo" style="max-height: 36px"/>
             </RouterLink>
         </template>
@@ -129,32 +128,31 @@ const guestMenuItems = ref([
                         :href="href"
                         v-bind="props.action"
                         @click.prevent="() => navigate()"
-                        class="flex items-center" >
+                        class="tw:flex tw:items-center" >
                         <span :class="['p-menuitem-icon', item.icon]"></span>
                         <span>{{ item.label }}</span>
-                        <Badge v-if="item.badge" :class="{ 'ml-auto': !root, 'ml-2': root }" :value="item.badge" />
-                        <span v-if="item.shortcut" class="ml-auto border border-surface rounded bg-emphasis text-muted-color text-xs p-1">{{ item.shortcut }}</span>
+                        <Badge v-if="item.badge" :class="{ 'tw:ml-auto': !root, 'tw:ml-2': root }" :value="item.badge" />
                     </a>
                 </RouterLink>
-                <a v-else v-ripple v-bind="props.action" class="flex items-center">
+                <a v-else v-ripple v-bind="props.action" class="tw:flex tw:items-center">
                     <span :class="['p-menuitem-icon', item.icon]"></span>
                     <span>{{ item.label }}</span>
-                    <Badge v-if="item.badge" :class="{ 'ml-auto': !root, 'ml-2': root }" :value="item.badge" />
-                    <span v-if="item.shortcut" class="ml-auto border border-surface rounded bg-emphasis text-muted-color text-xs p-1">{{ item.shortcut }}</span>
-                    <i v-if="hasSubmenu" :class="['pi pi-angle-down ml-auto', { 'pi-angle-down': root, 'pi-angle-right': !root }]"></i>
+                    <Badge v-if="item.badge" :class="{ 'tw:ml-auto': !root, 'tw:ml-2': root }" :value="item.badge" />
+                    <i v-if="hasSubmenu" :class="['pi pi-angle-down tw:ml-auto', { 'pi-angle-down': root, 'pi-angle-right': !root }]"></i>
                 </a>
             </template>
         </template>
         <template #end>
-            <div class="flex items-center gap-2">
+            <div class="tw:flex tw:items-center tw:gap-2">
                 <Button
+                    v-if="isSearchButtonVisible"
                     icon="pi pi-search"
                     variant="text"
                     style="color: inherit; border-radius: 50%"/>
                 <template v-if="!isLoggedIn">
                     <Button
                         variant="text"
-                        class="border-circle"
+                        class="tw:rounded-[50%]"
                         style="color: inherit; width: 40px; height: 40px; border: 2px solid var(--p-text-color)"
                         icon="pi pi-user"
                         @click="(e) => $refs.guestMenu?.toggle(e)"/>
@@ -181,13 +179,14 @@ const guestMenuItems = ref([
                         :popup="true"
                         :pt="menuPtOptions">
                         <template #start>
-                            <div class="flex flex-column align-items-center justify-content-center">
+                            <div class="tw:flex tw:flex-col tw:items-center tw:justify-center">
                                 <UserAvatar
                                     :user="authUser"
                                     :size="64"
-                                    class="flex-grow-0"/>
-                                <div class="mt-3 font-bold">
-                                    {{ authUser.full_name }}
+                                    class="tw:flex-grow-0"/>
+                                <div class="tw:mt-5 tw:text-center">
+                                    <div class="tw:font-bold">{{ authUser.full_name }}</div>
+                                    <div class="tw:text-sm tw:text-gray-500">{{ authUser.email }}</div>
                                 </div>
                             </div>
                         </template>

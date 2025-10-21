@@ -14,6 +14,9 @@
 
         <!-- Scripts -->
         <script>
+            window.__xapp__ = @json($appConfig);
+        </script>
+        <script>
             if (!['dark', 'light'].includes(localStorage.getItem('themeMode'))) {
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 const themeMode = prefersDark ? 'dark' : 'light';
@@ -25,7 +28,7 @@
                 document.documentElement.classList.add('dark-mode');
             }
         </script>
-        @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body>
         <div id="app">

@@ -9,6 +9,8 @@ use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +34,9 @@ class User extends Authenticatable implements MustVerifyEmailContract
         'first_name',
         'last_name',
         'email_verified_at',
+        'country_code',
+        'phone_number',
+        'phone_number_verified_at',
         'remember_token',
         'status',
     ];
@@ -57,6 +62,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_number_verified_at' => 'datetime',
             'password' => 'hashed',
             'status' => UserStatus::class,
         ];
@@ -72,41 +78,15 @@ class User extends Authenticatable implements MustVerifyEmailContract
         return !!$this->getKey() && $this->status === UserStatus::ACTIVE;
     }
 
-    public function generateTokens(): array
+    public function oauthProviders(): BelongsToMany
     {
-        if (Auth::check()) {
-            $dateTimeNow = Carbon::now()->toImmutable();
-
-            $accessTokenExpiresAt = $dateTimeNow->addMinutes(intval(config('sanctum.expiration')) ?: 2);
-            $refreshTokenExpiresAt = $dateTimeNow->addMinutes(intval(config('sanctum.refresh_token_expiration')) ?: 4);
-
-            $accessToken = $this->createToken('access_token', ['*'], $accessTokenExpiresAt);
-            $refreshToken = $this->createRefreshToken($accessToken->accessToken->id, $refreshTokenExpiresAt);
-
-            return [
-                'access_token' => $accessToken->plainTextToken,
-                'refresh_token' => $refreshToken->plainTextToken,
-                'expires_in' => $accessTokenExpiresAt->diffInSeconds($dateTimeNow, true),
-                'expires_at' => $accessTokenExpiresAt->timestamp,
-                'token_type' => 'Bearer',
-            ];
-        }
-
-        throw new \Exception("Unauthenticated", 401);
+        return $this->belongsToMany(OAuthProvider::class, 'oauth_providers_users', 'user_id', 'oauth_provider_id')
+            ->withPivot(['oauth_provider_user_id'])
+            ->withTimestamps();
     }
 
-    private function createRefreshToken(int $parentId, ?DateTimeInterface $expiresAt = null) : NewAccessToken
+    public function logins(): HasMany
     {
-        $plainTextToken = $this->generateTokenString();
-
-        $token = $this->tokens()->create([
-            'name' => 'refresh_token',
-            'token' => hash('sha256', $plainTextToken),
-            'abilities' => ['refresh'],
-            'expires_at' => $expiresAt,
-            'parent_id' => $parentId,
-        ]);
-
-        return new NewAccessToken($token, $token->getKey().'|'.$plainTextToken);
+        return $this->hasMany(UserLogin::class);
     }
 }

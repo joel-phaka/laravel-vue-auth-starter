@@ -7,13 +7,22 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'prefix' => 'signin',
 ], function () {
-    Route::get('/{provider}', [SocialLoginController::class, 'redirectToProvider'])
-        ->whereIn('provider', config('auth.socialite.providers'))
-        ->name('auth.signin.provider');
-    Route::get('/{provider}/callback', [SocialLoginController::class, 'handleProviderCallback'])
-        ->whereIn('provider', config('auth.socialite.providers'))
-        ->name('auth.signin.provider.callback');
+    Route::group([
+        'prefix' => 'oauth/{oauthProvider}',
+        'middleware' => ['feature:oauth']
+    ], function () {
+        Route::get('/', [SocialLoginController::class, 'redirectToProvider'])
+            ->name('auth.signin.provider');
+        Route::get('callback', [SocialLoginController::class, 'handleProviderCallback'])
+            ->name('auth.signin.provider.callback');
+    });
+
 });
+
+// Health check
+Route::get('health', function () {
+    return response()->json(['status' => 'ok']);
+})->name('health');
 
 Route::get('{any}', [AppController::class, 'index'])
     ->where('any', '.*')

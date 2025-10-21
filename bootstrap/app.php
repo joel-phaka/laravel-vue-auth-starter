@@ -1,10 +1,13 @@
 <?php
 
-use App\Exceptions\AccessTokenException;
+use App\Exceptions\LoginException;
 use App\Http\Middleware\DynamicAuth;
 use App\Http\Middleware\VerifyActiveUser;
+use App\Http\Middleware\VerifyAuthState;
+use App\Http\Middleware\VerifyFeature;
 use App\Http\Middleware\VerifyRecaptcha;
 use App\Http\Middleware\VerifyUserRole;
+use App\Http\Middleware\VerifyUserStatus;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -30,9 +33,12 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'auth.dynamic' => DynamicAuth::class,
-            'verify.role' => VerifyUserRole::class,
-            'verify.active' => VerifyActiveUser::class,
-            'verify.recaptcha' => VerifyRecaptcha::class,
+            'auth.role' => VerifyUserRole::class,
+            'auth.state' => VerifyAuthState::class,
+            'auth.user_status' => VerifyUserStatus::class,
+            'auth.active' => VerifyActiveUser::class,
+            'feature' => VerifyFeature::class,
+            'recaptcha' => VerifyRecaptcha::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [
@@ -40,13 +46,13 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->statefulApi();
-        $middleware->append(VerifyActiveUser::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // Handle only AccessTokenException
-        $exceptions->renderable(function (AccessTokenException $e, Request $request) {
+        // Handle LoginException
+        $exceptions->renderable(function (LoginException $e, Request $request) {
             return response()
                 ->json($e->toArray())
                 ->unauthorized();
         });
+
     })->create();

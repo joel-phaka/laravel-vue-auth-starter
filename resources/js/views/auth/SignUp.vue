@@ -2,51 +2,53 @@
 import {useForm} from "vee-validate";
 import { toTypedSchema } from "@vee-validate/yup";
 import * as yup from "yup";
-import browserStorage from "@/lib/browser-storage.js";
 import {inject, ref} from "vue";
 import {Checkbox as RecaptchaCheckbox} from "vue-recaptcha";
-import {keysToSnakeCase} from "@/lib/utils.js";
+import {keysToSnakeCase, createFieldsSchema} from "@/lib/utils.js";
 import * as authService from "@/services/auth.service.js";
 import {useRouter} from "vue-router";
 import appLogo from "@/assets/app-logo.png";
+import {useAppStore} from "@/stores/app.store.js"
+import OAuthProviderLinks from "@/components/auth/OAuthProviderLinks.vue";
+
+const {appFeatures} = useAppStore();
 
 const router = useRouter();
 
 const setProcessing = inject('app:layout:auth:setProcessing');
 
-const schema = yup.object({
-    firstName: yup
-        .string()
-        .label("First Name")
-        .required(),
-    lastName: yup
-        .string()
-        .label("Last Name")
-        .required(),
-    email: yup
-        .string()
-        .label("Email")
-        .required()
-        .email(),
-    password: yup
-        .string()
-        .label("Password")
-        .required(),
-    passwordConfirmation: yup
-        .string()
-        .label("Confirm Password")
-        .required()
-        .oneOf([yup.ref("password")], 'Passwords do not match')
-        .required(),
-    acceptTerms: yup
-        .bool()
-        .oneOf([true], "Please read the terms and conditions and then accept them to continue."),
-    recaptchaToken: yup
-        .string()
-        .required("Please complete the reCAPTCHA check.")
-});
+const schema = createFieldsSchema({
+        firstName: yup
+            .string()
+            .label("First Name")
+            .required(),
+        lastName: yup
+            .string()
+            .label("Last Name")
+            .required(),
+        email: yup
+            .string()
+            .label("Email")
+            .required()
+            .email(),
+        password: yup
+            .string()
+            .label("Password")
+            .required(),
+        passwordConfirmation: yup
+            .string()
+            .label("Confirm Password")
+            .required()
+            .oneOf([yup.ref("password")], 'Passwords do not match')
+            .required(),
+        acceptTerms: yup
+            .bool()
+            .oneOf([true], "Please read the terms and conditions and then accept them to continue."),
+    },
+    true,
+);
 
-const { meta, defineField, errors, handleSubmit } = useForm({
+const { meta, errors, defineField, setErrors, handleSubmit } = useForm({
     validationSchema: toTypedSchema(schema),
 });
 
@@ -69,14 +71,11 @@ const onSubmit = handleSubmit(async (values) => {
 
         await authService.register(userData);
 
-        browserStorage.set('loginEmail', email.value);
-
-        await router.replace({
-            path: '/signin',
-        });
+        await router.replace('/');
     } catch (error) {
         registrationError.value = error;
-        browserStorage.remove('loginEmail');
+
+        if (error.hasValidationErrors) setErrors(error.validationErrors);
     } finally {
         setProcessing(false);
     }
@@ -94,8 +93,8 @@ const onSubmit = handleSubmit(async (values) => {
             </template>
         </div>
         <div>
-            <div class="mb-3">
-                <label for="firstName" class="block pb-1">First Name</label>
+            <div class="tw:mb-3">
+                <label for="firstName" class="tw:block tw:pb-1">First Name</label>
                 <InputText
                     v-model="firstName"
                     v-bind="firstNameAttrs"
@@ -103,11 +102,11 @@ const onSubmit = handleSubmit(async (values) => {
                     id="firstName"
                     name="firstName"
                     placeholder="First Name"
-                    class="block w-full"/>
-                <p v-if="!!errors.firstName" class="mt-2 text-red-500">{{errors.firstName}}</p>
+                    class="tw:block tw:w-full"/>
+                <p v-if="!!errors.firstName" class="tw:mt-2 tw:text-red-500">{{errors.firstName}}</p>
             </div>
-            <div class="mb-3">
-                <label for="lastName" class="block pb-1">Last Name</label>
+            <div class="tw:mb-3">
+                <label for="lastName" class="tw:block tw:pb-1">Last Name</label>
                 <InputText
                     v-model="lastName"
                     v-bind="lastNameAttrs"
@@ -115,10 +114,10 @@ const onSubmit = handleSubmit(async (values) => {
                     id="lastName"
                     name="lastName"
                     placeholder="Last Name"
-                    class="block w-full"/>
-                <p v-if="!!errors.lastName" class="mt-2 text-red-500">{{errors.lastName}}</p>
+                    class="tw:block tw:w-full"/>
+                <p v-if="!!errors.lastName" class="tw:mt-2 tw:text-red-500">{{errors.lastName}}</p>
             </div>
-            <div class="mb-3">
+            <div class="tw:mb-3">
                 <label for="email" class="block pb-1">Email</label>
                 <InputText
                     v-model="email"
@@ -127,11 +126,11 @@ const onSubmit = handleSubmit(async (values) => {
                     id="email"
                     name="email"
                     placeholder="Email"
-                    class="block w-full"/>
-                <p v-if="!!errors.email" class="mt-2 text-red-500">{{errors.email}}</p>
+                    class="tw:block tw:w-full"/>
+                <p v-if="!!errors.email" class="tw:mt-2 tw:text-red-500">{{errors.email}}</p>
             </div>
-            <div class="mb-3">
-                <label for="password" class="block pb-1">Password</label>
+            <div class="tw:mb-3">
+                <label for="password" class="tw:block tw:pb-1">Password</label>
                 <Password
                     v-model="password"
                     v-bind="passwordAttrs"
@@ -141,11 +140,11 @@ const onSubmit = handleSubmit(async (values) => {
                     placeholder="Password"
                     :feedback="false"
                     toggleMask
-                    class="w-full"/>
-                <p v-if="!!errors.password" class="mt-2 text-red-500">{{errors.password}}</p>
+                    class="tw:w-full"/>
+                <p v-if="!!errors.password" class="tw:mt-2 tw:text-red-500">{{errors.password}}</p>
             </div>
-            <div class="mb-5">
-                <label for="passwordConfirmation" class="block pb-1">Confirm Password</label>
+            <div class="tw:mb-5">
+                <label for="passwordConfirmation" class="tw:block tw:pb-1">Confirm Password</label>
                 <Password
                     v-model="passwordConfirmation"
                     v-bind="passwordConfirmationAttrs"
@@ -155,33 +154,34 @@ const onSubmit = handleSubmit(async (values) => {
                     placeholder="Confirm Password"
                     :feedback="false"
                     toggleMask
-                    class="w-full"/>
-                <p v-if="!!errors.passwordConfirmation" class="mt-2 text-red-500">{{errors.passwordConfirmation}}</p>
+                    class="tw:w-full"/>
+                <p v-if="!!errors.passwordConfirmation" class="tw:mt-2 tw:text-red-500">{{errors.passwordConfirmation}}</p>
             </div>
-            <div class="mb-6">
-                <div class="mb-3 flex align-items-center">
+            <div>
+                <div class="tw:mb-3 tw:flex tw:items-center tw:gap-2">
                     <Checkbox
                         v-model="acceptTerms"
                         v-bind="acceptTermsAttrs"
                         binary
                         input-id="acceptTerms"
                         name="acceptTerms"/>
-                    <label for="acceptTerms" class="ml-2 cursor-pointer">I accept terms and conditions</label>
+                    <label for="acceptTerms" class="cursor-pointer">I accept terms and conditions</label>
                 </div>
-                <p v-if="!!errors.acceptTerms" class="mt-2 text-red-500">{{errors.acceptTerms}}</p>
+                <p v-if="!!errors.acceptTerms" class="tw:mt-2 tw:text-red-500">{{errors.acceptTerms}}</p>
             </div>
-            <div class="mb-6 flex justify-content-center">
+            <div v-if="appFeatures.recaptcha" class="tw:mt-9 tw:flex tw:justify-center">
                 <div>
                     <RecaptchaCheckbox v-model="recaptchaToken" v-bind="recaptchaTokenAttrs"/>
-                    <div v-if="!!errors.recaptchaToken" class="mt-2 text-red-500">
+                    <div v-if="!!errors.recaptchaToken" class="tw:mt-2 tw:text-red-500">
                         {{ errors.recaptchaToken }}
                     </div>
                 </div>
             </div>
-            <Button type="submit" :disabled="!meta.valid" class="block w-full mt-5 text-center">Sign Up</Button>
-            <p class="text-center mt-5 mb-0">
-                Already have an account? <router-link to="/signin" class="no-underline">Sign In</router-link>
+            <Button type="submit" :disabled="!meta.valid" class="tw:mt-9 tw:block tw:w-full tw:text-center">Sign Up</Button>
+            <p class="tw:text-center tw:mt-8 tw:mb-0">
+                Already have an account? <router-link to="/signin" class="no-underline default-link">Sign In</router-link>
             </p>
+            <OAuthProviderLinks class="tw:mt-3"/>
         </div>
     </form>
 </template>

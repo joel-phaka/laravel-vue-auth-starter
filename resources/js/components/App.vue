@@ -4,8 +4,13 @@ import {useRoute} from "vue-router";
 import {useRecaptchaProvider} from "vue-recaptcha";
 import layouts from "@/components/layouts/index.js";
 import useAuth from "@/composables/useAuth.js";
+import {useAppStore} from "@/stores/app.store.js";
 
-useRecaptchaProvider();
+const {appFeatures} = useAppStore();
+
+if (appFeatures.recaptcha) {
+    useRecaptchaProvider();
+}
 
 const route = useRoute();
 
@@ -35,14 +40,16 @@ watch(() => route.meta.title, setPageTitle, { immediate: true });
     <component
         v-if="!isLoggingOut"
         :is="layout"
-        :key="$route.meta.layout">
+        :key="$route.path">
         <router-view :key="$route.fullPath"/>
     </component>
     <div
         v-else
-        class="main-container flex md:align-items-center md:justify-content-center relative"
+        class="main-container tw:flex tw:md:items-center tw:md:justify-center tw:relative"
         style="min-height: 100vh">
-        <div class="fixed center-vertical-horizontal surface-ground" style="width: max-content; border-radius: 50%">
+        <div
+            class="tw:fixed tw:bg-surface-200 tw:dark:bg-surface-800 center-vertical-horizontal"
+            style="width: max-content; height: max-content; max-height: max-content; border-radius: 50%; aspect-ratio: 1 / 1;">
             <ProgressSpinner strokeWidth="4"/>
         </div>
     </div>

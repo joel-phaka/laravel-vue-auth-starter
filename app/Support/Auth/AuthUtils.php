@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Support;
+namespace App\Support\Auth;
 
+use App\Enums\AuthState;
+use App\Enums\AuthType;
 use App\Exceptions\AccessTokenException;
 use App\Models\User;
-use DateTimeImmutable;
+use App\Models\UserLogin;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Laravel\Passport\Bridge\AccessToken;
 use Laravel\Passport\Bridge\AccessTokenRepository;
 use Laravel\Passport\Bridge\ClientRepository;
 use Laravel\Passport\Bridge\RefreshTokenRepository;
@@ -222,5 +224,30 @@ class AuthUtils
         };
 
         return $customGrant->issueAccessTokenData($accessToken);
+    }
+
+    public static function findTokenIdByAccessToken(string $accessToken): string|int
+    {
+        return (new PassportToken($accessToken))?->token_id;
+    }
+
+    public static function getCurrentLogin(): UserLogin|null
+    {
+        $guard = Auth::getDefaultDriver();
+        $authType = match ($guard) {
+            'sanctum', 'web' => AuthType::SESSION,
+            'api' => AuthType::ACCESS_TOKEN,
+        };
+        $authTypeId = match ($authType) {
+            AuthType::SESSION => session()->id(),
+            AuthType::ACCESS_TOKEN => AuthUtils::findTokenIdByAccessToken(preg_split('/\s+/', request()->bearerToken())[0] ?? '')
+        };
+
+        return Auth::user()
+            ->logins()
+            ->firstWhere([
+                'auth_type' => $authType,
+                'auth_type_id' => $authTypeId
+            ]);
     }
 }

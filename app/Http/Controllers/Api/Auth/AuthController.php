@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Enums\UserStatus;
+use App\Enums\AuthType;
 use App\Events\UserLoggedIn;
+use App\Events\UserLoggedOut;
 use App\Exceptions\AccessTokenException;
-use App\Support\AuthUtils;
+use App\Exceptions\LoginException;
+use App\Exceptions\UserStatusException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Auth\LoginRequest;
 use App\Http\Requests\Api\Auth\RefreshTokenRequest;
+use App\Models\User;
+use App\Support\Auth\AuthUtils;
+use App\Support\Auth\AuthEventData;
 use Carbon\Carbon;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
@@ -24,19 +29,16 @@ class AuthController extends Controller
 {
     public function login(LoginRequest $request): JsonResponse
     {
-        abort_if(
-            !Auth::attempt($request->only('email', 'password'), $request->boolean('remember_me')),
-            response()
-                ->json([
-                    'message' => 'Unauthorized',
-                    'error_code' => 'auth_invalid_credentials'
-                ])
-                ->unauthorized()
-        );
+        if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember_me'))) {
+            throw new LoginException(reason: 'invalid_credentials');
+        }
 
-        event(new UserLoggedIn(Auth::user()));
+        $this->triggerUserLoggedInEvent(Auth::user(), AuthType::SESSION, session()->id());;
 
-        return response()->json(Auth::user());
+        return response()->json([
+            'auth_state' => AuthUtils::getCurrentLogin()->auth_state->code(),
+            'user' => Auth::user()
+        ]);
     }
 
     public function user(): JsonResponse
@@ -46,15 +48,7 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $guard = Auth::getDefaultDriver();
-
-        if ($guard === 'sanctum') {
-            Auth::guard('web')->logout();
-            session()->invalidate();
-            session()->regenerateToken();
-        } else if ($guard === 'api') {
-            auth()->user()->token()->revoke();
-        }
+        event(new UserLoggedOut(Auth::user()));
 
         return response()
             ->json(['success' => true]);
@@ -64,6 +58,8 @@ class AuthController extends Controller
      * @throws AccessTokenException
      * @throws ConnectionException
      * @throws RequestException
+     * @throws UserStatusException
+     * @throws LoginException
      */
     private function getTokens(array $credentials): array
     {
@@ -125,16 +121,9 @@ class AuthController extends Controller
         $user = AuthUtils::findUserByAccessToken($tokenData['access_token']);
 
         if (!$user) {
-            throw new AccessTokenException();
+            throw new LoginException();
         } else if (!$user->is_active) {
-            throw new AccessTokenException(
-                reason: match ($user->status) {
-                    UserStatus::INACTIVE => 'auth_user_inactive',
-                    UserStatus::SUSPENDED => 'auth_user_suspended',
-                    UserStatus::BANNED => 'auth_user_banned',
-                    default => 'unauthorized'
-                }
-            );
+            throw new UserStatusException($user->status);
         }
 
         $passportToken = new PassportToken($tokenData['access_token']);
@@ -150,6 +139,12 @@ class AuthController extends Controller
         ];
     }
 
+    private function triggerUserLoggedInEvent(User $user, AuthType $authType, string|int $authTypeId)
+    {
+        $authEventData = new AuthEventData($user, $authType, $authTypeId);
+        event(new UserLoggedIn($authEventData));
+    }
+
     /**
      * @throws RequestException
      * @throws AccessTokenException
@@ -163,12 +158,23 @@ class AuthController extends Controller
         ];
 
         $tokens = $this->getTokens($credentials);
+        $user = $tokens['user'];
+        $accessTokenId = AuthUtils::findTokenIdByAccessToken($tokens['access_token']);
 
-        Auth::login($tokens['user']);
+        Auth::login($user);
+        $this->triggerUserLoggedInEvent($user, AuthType::ACCESS_TOKEN, $accessTokenId);
 
-        event(new UserLoggedIn($tokens['user']));
+        $userLogin = Auth::user()
+            ->logins()
+            ->firstWhere([
+                'auth_type' => AuthType::ACCESS_TOKEN,
+                'auth_type_id' => $accessTokenId
+            ]);
 
-        return response()->json(Arr::except($tokens, ['user']));
+        return response()->json([
+            'auth_state' => $userLogin->auth_state->code(),
+            ...Arr::except($tokens, ['user'])
+        ]);
     }
 
     /**

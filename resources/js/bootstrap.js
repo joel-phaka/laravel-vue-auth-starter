@@ -5,13 +5,19 @@
  */
 
 import axios from 'axios';
-import {appUrl, normaliseError} from "@/lib/utils.js";
+import {normaliseError, toLocalUri} from "@/lib/utils.js";
 import {useAuthStore} from "@/stores/auth.store.js";
+import router from "@/router/index.js";
 
 window.axios = axios;
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-window.axios.defaults.withCredentials = true;
 window.axios.interceptors.request.use(config => {
+    const isLocalUrl = !!toLocalUri(config.url);
+
+    if (!isLocalUrl) return config;
+
+    config.headers['X-Requested-With'] = 'XMLHttpRequest';
+    config.withCredentials = true;
+
     if (typeof config.headers['Content-Type'] === 'undefined') {
         config.headers['Content-Type'] = 'application/json'
     }
@@ -23,19 +29,26 @@ window.axios.interceptors.request.use(config => {
     return config;
 });
 
-window.axios.interceptors.response.use(response => response, error => Promise.reject(normaliseError(error)));
+window.axios.interceptors.response.use(
+    response => response,
+    error => Promise.reject(normaliseError(error))
+);
 
 window.axios.interceptors.response.use(
     response => response,
     error => {
-        const url = error.response.config?.url;
-        const statusCode = error.response.status;
+        const url = error.response?.config?.url;
+        const localUri = toLocalUri(url);
 
-        if (url && (url.startsWith('/') || url.startsWith(appUrl())) && statusCode === 401) {
-            const {isLoggedIn} = useAuthStore();
-            const urlPath = url.replace(new RegExp(`^${appUrl()}`), '');
+        if (!localUri) return Promise.reject(error);
 
-            if (isLoggedIn.value && !/^\/api\/((auth\/(login|register|logout))|oauth)/.test(urlPath)) {
+        const statusCode = error.response?.status;
+        const reason = error.response?.data?.reason;
+
+        const {isLoggedIn} = useAuthStore();
+
+        if (statusCode === 401) {
+            if (isLoggedIn.value && !/^\/api\/((auth\/(login|register|logout))|oauth)/.test(localUri)) {
                 window.location.reload();
             }
         }

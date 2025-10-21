@@ -5,6 +5,7 @@ import {normaliseError} from "@/lib/utils.js";
 
 const getDefaultState = () => {
     return {
+        authState: null,
         authUser: null,
         isLoggingIn: false,
         isLoggingOut: false,
@@ -23,31 +24,35 @@ export const useAuthStore = defineStore('auth', {
         isLoggedIn: state => !!state.authUser?.id && !!state.authUser.email,
     },
     actions: {
+        async setAuthState(authState) {
+            this.authState = authState;
+        },
         async loginUser(credentials, callback = null) {
             try {
                 this.clearErrors()
                 this.isLoggingIn = true;
 
-                this.authUser = await authService.login(credentials);
+                const {user, auth_state} = await authService.login(credentials);
+                this.authUser = user;
+                this.authState = auth_state;
 
-                if (_.isFunction(callback)) await callback();
+                if (_.isFunction(callback)) await callback({authUser: user, authState: auth_state});
             } catch (error) {
-                this.authErrors.loginError = normaliseError(error);
+                this.authErrors.loginError = error;
+
                 console.log(error);
             } finally {
                 this.isLoggingIn = false;
             }
-
-            return this.authUser;
         },
-        async logoutUser(callback) {
+        async logoutUser(callback = null) {
             try {
                 this.clearErrors()
                 this.isLoggingOut = true;
 
                 await authService.logout();
             } catch (error) {
-                this.authErrors.logoutError = normaliseError(error);
+                this.authErrors.logoutError = error;
                 console.log(error);
             } finally {
                 this.authUser = null;
@@ -66,7 +71,7 @@ export const useAuthStore = defineStore('auth', {
 
                 this.authUser = await authService.fetchAuthUser();
             } catch (error) {
-                this.authErrors.fetchUserError = normaliseError(error);
+                this.authErrors.fetchUserError = error;
                 console.log(error);
             } finally {
                 this.isFetchingAuthUser = false;

@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Enums\UserRole;
-use App\Support\Utils;
 use App\Models\Role;
 use Closure;
 use Illuminate\Http\Request;

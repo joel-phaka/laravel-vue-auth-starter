@@ -2,6 +2,11 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\AuthState;
+use App\Enums\UserStatus;
+use App\Exceptions\AuthStateException;
+use App\Exceptions\LoginException;
+use App\Support\Auth\AuthUtils;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +17,8 @@ class DynamicAuth
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
+     * @throws LoginException
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -25,6 +31,10 @@ class DynamicAuth
             Auth::shouldUse('api');
         } else {
             Auth::shouldUse('sanctum');
+        }
+
+        if (!Auth::check()) {
+            throw new LoginException();
         }
 
         return $next($request);
